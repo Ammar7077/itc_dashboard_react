@@ -1,29 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FOLDER } from '../../types/folder';
+import { useDispatch } from 'react-redux';
+import { getMainFolder } from '../../redux/consulting/consultingSlice';
 
 interface FolderProps {
     folders: FOLDER[];
-    title:string;
+    title: string;
 }
 
-const Folder: React.FC<FolderProps> = ({ folders,title }) => {
-    // State to store the selected folder ID
-    const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+const Folder: React.FC<FolderProps> = ({ folders, title }) => {
 
-    // Get the selected folder ID from localStorage when the component mounts
+    const [selectedFolder, setSelectedFolder] = useState<{ id: string; name: string } | null>(null);
+    const dispatch = useDispatch();
+
+    // Load saved folder from localStorage on component mount
     useEffect(() => {
-        const savedFolderId = localStorage.getItem('selectedFolderId');
-        if (savedFolderId) {
-            setSelectedFolderId(savedFolderId);
+        const savedFolder = localStorage.getItem('selectedFolder');
+        if (savedFolder) {
+            try {
+                const folderDetails = JSON.parse(savedFolder);
+                setSelectedFolder(folderDetails);   
+                dispatch(getMainFolder(folderDetails));  
+            } catch (error) {
+                console.error('Error parsing saved folder data:', error);
+            }
         }
-    }, []);
+    }, [dispatch]);  
 
-    // Function to handle folder click and store the selected folder ID
-    const handleFolderClick = (folderId: string) => {
-        setSelectedFolderId(folderId); // Update state with the clicked folder ID
-        localStorage.setItem('selectedFolderId', folderId); // Save selected folder ID to localStorage
+    // Function to handle folder click and store the selected folder details
+    const handleFolderClick = (folder: FOLDER) => {
+        const folderDetails = { id: folder._id, name: folder.name };
+        setSelectedFolder(folderDetails);
+        dispatch(getMainFolder(folderDetails));  
+        localStorage.setItem('selectedFolder', JSON.stringify(folderDetails));  
     };
+
 
     return (
         <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -35,23 +47,23 @@ const Folder: React.FC<FolderProps> = ({ folders,title }) => {
 
             <div className="p-4 md:p-6 xl:p-9">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-                    {folders.map(folder => (
+                    {folders.map((folder) => (
                         <Link
                             key={folder._id}
                             to="#"
-                            onClick={() => handleFolderClick(folder._id)}
+                            onClick={() => handleFolderClick(folder)}
                             className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
-                                selectedFolderId === folder._id
-                                    ? 'bg-lime-900 text-white border-transparent' // Active folder style
-                                    : 'border-lime text-primary hover:bg-neutral-300 hover:border-white hover:text-black' // Default and hover styles
+                                selectedFolder?.id === folder._id
+                                    ? 'bg-slate-900 text-white border-transparent' 
+                                    : 'border-amber text-amber hover:bg-neutral-300 hover:border-white hover:text-black' 
                             }`}
                         >
                             <div className="flex flex-col">
                                 <span className="font-medium text-lg">
-                                    {folder.name} {/* Display folder name */}
+                                    {folder.name} 
                                 </span>
-                                <span className='mt-1 text-lime-300 dark:text-white'>
-                                    {folder.total_files} Files {/* Display file count */}
+                                <span className='mt-1 text-amber-500 dark:text-white'>
+                                    {folder.total_files} Files 
                                 </span>
                             </div>
                             <span className="ml-4 flex-shrink-0">

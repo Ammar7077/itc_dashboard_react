@@ -6,3 +6,8 @@ export type FOLDER = {
     total_folders: string;
     document_type:string;
 }
+
+export type MAIN = {
+    id:string;
+    name:string;
+}
