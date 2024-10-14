@@ -6,6 +6,7 @@ import DataBank from './pages/Dashboard/DataBank';
 import Ai from './pages/ais/Ai';
 import Consulting from './pages/consulting/Consulting';
 import AI from './pages/DataEntry/AI/AI';
+import JSONLs from './pages/JSONLs/JSONLs';
 
 function App() {
 
@@ -68,6 +69,15 @@ function App() {
       }
       />
 
+      <Route
+      path='/data/JSONLs'
+      element={
+        <>
+        <PageTitle title='Data of JSONLs Folders'/>
+        <JSONLs/>
+        </>
+      }
+      />
 
     {/* <!-- ===== adding pages here ===== --> */}
 

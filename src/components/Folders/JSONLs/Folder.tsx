@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FOLDER } from '../../types/folder';
+import { FOLDER } from '../../../types/folder';
 import { useDispatch } from 'react-redux';
-import { getMainFolder } from '../../redux/JSONLs/JSONLsSlice';
+import { getMainFolder } from '../../../redux/JSONLs/JSONLsSlice';
 
 interface FolderProps {
     folders: FOLDER[];
@@ -18,7 +18,7 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
 
     // Load saved folder from localStorage on component mount
     useEffect(() => {
-        const savedFolder = localStorage.getItem('selectedFolder');
+        const savedFolder = localStorage.getItem('selectedJSONLsFolder');
         if (savedFolder) {
             try {
                 const folderDetails = JSON.parse(savedFolder);
@@ -37,7 +37,7 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
         
         setSelectedFolder(folderDetails);
         dispatch(getMainFolder(folderDetails));  
-        localStorage.setItem('selectedFolder', JSON.stringify(folderDetails));  
+        localStorage.setItem('selectedJSONLsFolder', JSON.stringify(folderDetails));  
     };
 
 

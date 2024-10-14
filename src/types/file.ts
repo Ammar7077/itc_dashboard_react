@@ -1,7 +1,11 @@
 export type FILE = {
+    _id: string;
+    parent_id: string;
     name: string;
-    visitors: number;
-    revenues: string;
-    sales: number;
-    conversion: number;
+    size: number;
+    extension:string;
+    document_type: string;
+    path:{
+        pathString:string
+    };
 }

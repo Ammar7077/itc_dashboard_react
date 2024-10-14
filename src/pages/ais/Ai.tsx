@@ -6,7 +6,7 @@ import DatePickerOne from '../../components/Filteration/DatePickerOne';
 import Folder from '../../components/Folders/Folder';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFiles, getFolders } from '../../redux/consulting/consultingSlice';
+import { getFiles, getFolders } from '../../redux/AI/aisSlice';
 import { FOLDER, MAIN } from '../../types/folder';
 import { FILE } from '../../types/file';
 import InputText from '../../components/Filteration/InputText';
@@ -17,7 +17,7 @@ import CheckBoxSubFolder from '../../components/Folders/CheckBoxSubFolder';
 
 
 interface RootState {
-    consulting: {
+    ais: {
         folders: FOLDER[];
         mainFolder:MAIN;
     };
@@ -28,8 +28,8 @@ const Ai: React.FC = () => {
     const dispatch = useDispatch();
 
     const { folders,mainFolder } = useSelector((state: RootState) => ({
-        folders: state.consulting.folders,
-        mainFolder:state.consulting.mainFolder
+        folders: state.ais.folders,
+        mainFolder:state.ais.mainFolder
     }));
 
   const mainFolderName = mainFolder ? mainFolder.name : 'loading...';
@@ -42,7 +42,7 @@ const Ai: React.FC = () => {
     //--------------get Folders ----
     const fetchFolders = async () => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://localhost:3000/ais/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://localhost:3000/jsonls/filter`, {
                 parent_id: parentId,
             });
             console.log("API Response:", result.data); // Log the entire response
@@ -72,14 +72,14 @@ const Ai: React.FC = () => {
         
     return (
         <>
-            <Breadcrumb pageName='Consultings' />
-            <Folder folders={folders || []} title={"Consulting's Folders"}  /> 
+            <Breadcrumb pageName='aiss' />
+            <Folder folders={folders || []} title={"ais's Folders"}  /> 
             <div className='grid grid-cols-1 gap-9 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 mb-10'>
                 
                 {/* <InputText/> */}
 
                  {/* <!-- Checkbox and radio --> */}
-             <div className="col-span-2 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+             <div className="col-span-4 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                      <h3 className="font-medium text-black dark:text-white">
                      Subfolders on {mainFolderName}
@@ -89,7 +89,7 @@ const Ai: React.FC = () => {
                 <SubFolder mainFolderId={mainFolderId}/>
                 </div>
              </div>
-
+{/* 
              <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                      <h3 className="font-medium text-black dark:text-white">
@@ -99,10 +99,10 @@ const Ai: React.FC = () => {
                 <div className="flex flex-col gap-5.5 p-6.5">
                 <CheckBoxSubFolder/>
                 </div>
-             </div>
+             </div> */}
 
                 {/* Select */}
-                <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+             {/*    <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                     <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                         <h3 className="font-medium text-black dark:text-white">
                             Categories for {mainFolderName}
@@ -113,7 +113,7 @@ const Ai: React.FC = () => {
                         <DatePickerOne />
 
                     </div>
-                </div>
+                </div> */}
 
                 {/* Time and date */}
                 {/* <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -130,7 +130,7 @@ const Ai: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-10">
-                <TableOne consulting={{
+                <TableOne ais={{
                     folders: []
                 }} />
             </div> 

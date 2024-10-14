@@ -3,14 +3,14 @@ import { useSelector } from "react-redux";
 import { FOLDER } from "../../types/folder";
 
 interface FolderProps {
-  consulting: {
+  ais: {
     folders: FOLDER[];
   };
 }
 
 const TableOne: React.FC<FolderProps> = () => {
   const { folders } = useSelector((state: FolderProps) => ({
-    folders: state.consulting.folders,
+    folders: state.ais.folders,
   }));
 
   // State for the current page

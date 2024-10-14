@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-const consultingSlice = createSlice({
-  name: "consulting",
+const aisSlice = createSlice({
+  name: "ais",
   initialState: {
     folders: [],
     files: [],
@@ -43,5 +43,5 @@ export const {
     getSubFolders,
     getSubFolder,
     getSubSubfolders
-} = consultingSlice.actions;
-export default consultingSlice.reducer;
+} = aisSlice.actions;
+export default aisSlice.reducer;

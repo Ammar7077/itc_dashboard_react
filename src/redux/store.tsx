@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import consultingReducer from "./consulting/consultingSlice"
+import aisReducer from "./AI/aisSlice"
+import JSONLsReducer from './JSONLs/JSONLsSlice'
 
 export default configureStore({
   // the reducer object is empty for now but after creating reducers we add them to this object
   reducer: {
-    consulting:consultingReducer,
+    ais:aisReducer,
+    JSONLs:JSONLsReducer
   },
 });

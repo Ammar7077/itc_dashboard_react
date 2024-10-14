@@ -6,7 +6,7 @@ import DatePickerOne from '../../components/Filteration/DatePickerOne';
 import Folder from '../../components/Folders/Folder';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFiles, getFolders } from '../../redux/consulting/consultingSlice';
+import { getFiles, getFolders } from '../../redux/AI/aisSlice';
 import { FOLDER, MAIN } from '../../types/folder';
 import { FILE } from '../../types/file';
 import InputText from '../../components/Filteration/InputText';
@@ -40,7 +40,7 @@ const Consulting: React.FC = () => {
     //--------------get Folders ----
     const fetchFolders = async () => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://localhost:3000/consultings/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://localhost:3000/jsonls/filter`, {
                 parent_id: parentId,
             });
             console.log("API Response:", result.data); // Log the entire response
@@ -127,11 +127,11 @@ const Consulting: React.FC = () => {
 
             </div>
 
-            <div className="flex flex-col gap-10">
+            {/* <div className="flex flex-col gap-10">
                 <TableOne consulting={{
                     folders: []
                 }} />
-            </div> 
+            </div>  */}
         </>
     );
 }
