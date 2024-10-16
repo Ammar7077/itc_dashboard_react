@@ -34,7 +34,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     // ------ Fetch SubFolders ------
     const fetchSubFolders = async (folderId: string) => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://localhost:3000/jsonls/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://192.168.1.116:3000/jsonls/filter`, {
                 parent_id: folderId,
             });
             console.log("resukt sub fodler",result);

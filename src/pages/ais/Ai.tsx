@@ -42,7 +42,7 @@ const Ai: React.FC = () => {
     //--------------get Folders ----
     const fetchFolders = async () => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://localhost:3000/jsonls/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://192.168.1.116:3000/jsonls/filter`, {
                 parent_id: parentId,
             });
             console.log("API Response:", result.data); // Log the entire response

@@ -9,6 +9,7 @@ const JSONLsSlice = createSlice({
     mainFolder:localStorage.getItem('selectedJSONLsFolder') || null,
     subFolder:localStorage.getItem('selectedJSONLsSubFolder') || null,
     categories:[],
+    fileInfo:null
   },
   reducers: {
     getFolders: (state,action)=>{
@@ -33,6 +34,9 @@ const JSONLsSlice = createSlice({
     getCategoriesForMainFolder:(state,action)=>{
       state.categories=action.payload
     },
+    getFileInfo:(state,action)=>{
+      state.fileInfo= action.payload
+    }
   }
 
 });
@@ -42,6 +46,7 @@ export const {
     getMainFolder,
     getSubFolders,
     getSubFolder,
-    getSubSubfolders
+    getSubSubfolders,
+    getFileInfo,
 } = JSONLsSlice.actions;
 export default JSONLsSlice.reducer;

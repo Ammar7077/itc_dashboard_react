@@ -33,7 +33,7 @@ const CheckBoxSubFolder: React.FC = () => {
     // ------ get SubFolders --
     const fetchSubFolders = async () => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://localhost:3000/ais/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://192.168.1.116:3000/ais/filter`, {
                 parent_id: subFolder,
             });
             console.log("API Response:", result.data); 

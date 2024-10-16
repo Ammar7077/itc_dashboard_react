@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FOLDER, MAIN } from "../../../types/folder";
 import axios from "axios";
-import { getFiles } from "../../../redux/JSONLs/JSONLsSlice";
+import { getFileInfo, getFiles } from "../../../redux/JSONLs/JSONLsSlice";
 import { FILE } from "../../../types/file";
 
 // File icons
@@ -15,8 +15,10 @@ import jsonlIcon from '../../../images/FilesIcon/json.png';
 import txtIcon from '../../../images/FilesIcon/txt.png';
 import xlsxIcon from '../../../images/FilesIcon/xlsx.png';
 import docxIcon from '../../../images/FilesIcon/docx.png';
-
+import view from '../../../images/FilesIcon/research.png';
 import download from '../../../images/FilesIcon/download.png';
+import nextPage from '../../../images/pageIcon/next-page.png'
+import prePage from '../../../images/pageIcon/left-arrow.png'
 
 interface FolderProps {
   JSONLs: {
@@ -26,18 +28,20 @@ interface FolderProps {
 }
 
 const TableOne: React.FC<FolderProps> = () => {
+
   const { subFolder, files } = useSelector((state: FolderProps) => ({
     subFolder: state.JSONLs.subFolder,
     files: state.JSONLs.files
   }));
+  
 
-  const subFolderId = subFolder.id;
+  const subFolderId = subFolder?.id;
   const dispatch = useDispatch();
 
   // Fetch Files
   const fetchFiles = async () => {
     try {
-      const result = await axios.post<{ data: FOLDER[] }>(`http://localhost:3000/jsonls/filter`, {
+      const result = await axios.post<{ data: FOLDER[] }>(`http://192.168.1.116:3000/jsonls/filter`, {
         parent_id: subFolderId,
       });
       if (result.data) {
@@ -48,10 +52,18 @@ const TableOne: React.FC<FolderProps> = () => {
     }
   };
 
+  // view file
+
+  const handleViewFile =(file:FILE)=>{
+    dispatch(getFileInfo(file))
+  }
+
+
   useEffect(() => {
     if (subFolder) {
       fetchFiles();
     }
+
   }, [dispatch, subFolderId]);
 
   // Get file icon based on the extension
@@ -74,7 +86,7 @@ const TableOne: React.FC<FolderProps> = () => {
   const filteredFiles = files.filter(file => file.document_type !== "folder");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const filesPerPage = 6;
+  const filesPerPage = 5;
 
   // Pagination logic
   const indexOfLastFile = currentPage * filesPerPage;
@@ -89,28 +101,26 @@ const TableOne: React.FC<FolderProps> = () => {
   };
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 bg-slate-50">
       <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-        Files in {subFolder.name}
+        Files in {subFolder?.name}
       </h4>
 
       <div className="flex flex-col">
-        <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5">
+        <div className="grid grid-cols-3 bg-slate-200 rounded-lg dark:bg-meta-4 m:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
           <div className="p-2.5 xl:p-5">
             <h5 className="text-sm font-medium uppercase xsm:text-base">Name</h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Path</h5>
-          </div>
-          <div className="p-2.5 text-center xl:p-5">
             <h5 className="text-sm font-medium uppercase xsm:text-base">Size</h5>
           </div>
-          <div className="hidden p-2.5 text-center sm:block xl:p-5">
+          <div className="hidden p-2.5 text-center items-center justify-center xl:flex sm:hidden xl:p-5">
             <h5 className="text-sm font-medium uppercase xsm:text-base">Extension</h5>
           </div>
-          <div className="hidden p-2.5 text-center sm:block xl:p-5">
+          <div className="p-2.5 text-center xl:p-5">
             <h5 className="text-sm font-medium uppercase xsm:text-base">Actions</h5>
           </div>
+          
         </div>
 
         {currentFiles.map((file, key) => {
@@ -118,7 +128,7 @@ const TableOne: React.FC<FolderProps> = () => {
           
           return (
             <div
-              className={`grid grid-cols-3 sm:grid-cols-5 ${
+              className={`grid grid-cols-3 m:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 ${
                 key === currentFiles.length - 1
                   ? ""
                   : "border-b border-stroke dark:border-strokedark"
@@ -127,34 +137,27 @@ const TableOne: React.FC<FolderProps> = () => {
             >
               <div className="flex items-center gap-3 p-2.5 xl:p-5">
                 <div className="flex-shrink-0">
-                  <img src={fileIcon} alt="file" className="w-10 h-12" />
+                  <img src={fileIcon} alt="file" className="w-12 h-14 " />
                 </div>
-                <p className="hidden text-black dark:text-white sm:block">{file.name}</p>
-              </div>
-
-              <div className="flex items-center justify-center p-2.5 xl:p-5">
-                <p className="text-black dark:text-white">{file.path.pathString}</p>
+                <p className="text-black dark:text-white">{file.name}</p>
               </div>
 
               <div className="flex items-center justify-center p-2.5 xl:p-5">
                 <p className="text-meta-3">{file.size}</p>
               </div>
 
-              <div className="hidden flex items-center justify-center p-2.5 sm:flex xl:p-5">
-                <p className="text-meta-3">{file.extension?.toUpperCase()}</p>
+              <div className="hidden xl:flex sm:hidden flex items-center justify-center p-2.5 sm:flex xl:p-5">
+                <p className="text-meta-3 ">{file.extension?.toUpperCase()}</p>
               </div>
 
               {/* Actions Column */}
               <div className="flex items-center justify-center gap-2 p-2.5 xl:p-5">
-                <button
-                  onClick={() => alert(`Reviewing ${file.name}`)}
-                  className="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600"
-                >
-                  Review
-                </button>
+                  <img src={view} alt="view" className="w-10 h-10 cursor-pointer"
+                  onClick={()=>handleViewFile(file)}
+                   />
                
-                  <img src={download} alt="download" className="w-10 h-10"
-                   onClick={() => alert(`Downloading ${file.name}`)}
+                  <img src={download} alt="download" className="w-10 h-10 cursor-pointer"
+                   
                    />
               </div>
             </div>
@@ -163,23 +166,17 @@ const TableOne: React.FC<FolderProps> = () => {
 
         {/* Pagination Controls */}
         <div className="flex justify-center mt-4">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="mx-4 text-black dark:text-white">
+          <img src={prePage}
+          onClick={() => handlePageChange(currentPage - 1)}
+          className="h-10"/>
+          <span className="mx-4 text-black font-bold dark:text-white">
             Page {currentPage} of {totalPages}
           </span>
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 disabled:opacity-50"
-          >
-            Next
-          </button>
+          
+          <img
+           onClick={() => handlePageChange(currentPage + 1)}
+           src={nextPage} className="h-10"/>
+
         </div>
       </div>
     </div>
