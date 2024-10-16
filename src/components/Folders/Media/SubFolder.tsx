@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FOLDER } from '../../../types/folder';
 import { useDispatch, useSelector } from 'react-redux';
-import { getMainFolder, getSubFolder, getSubFolders } from '../../../redux/JSONLs/JSONLsSlice';
+import { getMainFolder, getSubFolder, getSubFolders } from '../../../redux/Media/MediaSlice';
 import axios from 'axios';
 import Breadcrumb from './Breadcrumb'; // Import your breadcrumb component
 
@@ -11,7 +11,7 @@ interface FolderProps {
 }
 
 interface RootState {
-    JSONLs: {
+    Media: {
         subfolders: FOLDER[];
     };
 }
@@ -20,7 +20,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
 
     // Redux 
     const { subfolders } = useSelector((state: RootState) => ({
-        subfolders: state.JSONLs.subfolders,
+        subfolders: state.Media.subfolders,
     }));
 
     console.log("mainFolderId",mainFolderId);
@@ -34,7 +34,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     // ------ Fetch SubFolders ------
     const fetchSubFolders = async (folderId: string) => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/jsonls/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/media/filter`, {
                 parent_id: folderId,
             });
             console.log("resukt sub fodler",result);
@@ -54,7 +54,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     useEffect(() => {
         // Only fetch subfolders if the main folder is valid and selected
         if (!selectedSubfolder && mainFolderId) {
-            const savedFolder = localStorage.getItem('selectedJSONLsFolder');
+            const savedFolder = localStorage.getItem('selectedMediaFolder');
             if (savedFolder) {
                 const folderDetails = JSON.parse(savedFolder);
 
@@ -72,7 +72,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
         setBreadcrumbPath(prev => [...prev, subfolderDetails]); 
         dispatch(getSubFolder(subfolderDetails));
 
-        localStorage.setItem('selectedJSONLsSubFolder', JSON.stringify(subfolderDetails));
+        localStorage.setItem('selectedMediaSubFolder', JSON.stringify(subfolderDetails));
 
         fetchSubFolders(folder._id);
     };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FOLDER, MAIN } from "../../../types/folder";
 import axios from "axios";
-import { getFileInfo, getFiles } from "../../../redux/JSONLs/JSONLsSlice";
+import { getFileInfo, getFiles } from "../../../redux/Media/MediaSlice";
 import { FILE } from "../../../types/file";
 
 // File icons
@@ -21,7 +21,7 @@ import nextPage from '../../../images/pageIcon/next-page.png'
 import prePage from '../../../images/pageIcon/left-arrow.png'
 
 interface FolderProps {
-  JSONLs: {
+  Media: {
     subFolder: MAIN;
     files: FILE[];
   };
@@ -30,8 +30,8 @@ interface FolderProps {
 const TableOne: React.FC<FolderProps> = () => {
 
   const { subFolder, files } = useSelector((state: FolderProps) => ({
-    subFolder: state.JSONLs.subFolder,
-    files: state.JSONLs.files
+    subFolder: state.Media.subFolder,
+    files: state.Media.files
   }));
   
 
@@ -41,7 +41,7 @@ const TableOne: React.FC<FolderProps> = () => {
   // Fetch Files
   const fetchFiles = async () => {
     try {
-      const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/jsonls/filter`, {
+      const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/media/filter`, {
         parent_id: subFolderId,
       });
       if (result.data) {

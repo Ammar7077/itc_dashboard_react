@@ -1,18 +1,18 @@
 import React, { useEffect,useState } from 'react';
-import TableOne from '../../components/Tables/JSONLs/TablesFiles';
+import TableOne from '../../components/Tables/Media/TablesFiles';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import Folder from '../../components/Folders/JSONLs/Folder';
+import Folder from '../../components/Folders/Media/Folder';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFiles, getFolders } from '../../redux/JSONLs/JSONLsSlice';
+import { getFiles, getFolders } from '../../redux/Media/MediaSlice';
 import { FOLDER, MAIN } from '../../types/folder';
-import SubFolder from '../../components/Folders/JSONLs/SubFolder';
+import SubFolder from '../../components/Folders/Media/SubFolder';
 import { FILE } from '../../types/file';
 
 
 
 interface RootState {
-    JSONLs: {
+    Media: {
         folders: FOLDER[];
         mainFolder:MAIN;
         fileInfo:FILE;
@@ -20,28 +20,28 @@ interface RootState {
     };
 }
 
-const JSONLs: React.FC = () => {
+const Media: React.FC = () => {
     const [parentId, setParentId] = useState<string>("null");
     const dispatch = useDispatch();
 
     const { folders,mainFolder,fileInfo,files } = useSelector((state: RootState) => ({
-        folders: state.JSONLs.folders,
-        mainFolder:state.JSONLs.mainFolder,
-        fileInfo:state.JSONLs.fileInfo,
-        files:state.JSONLs.files
+        folders: state.Media.folders,
+        mainFolder:state.Media.mainFolder,
+        fileInfo:state.Media.fileInfo,
+        files:state.Media.files
     }));
 
   const mainFolderName = mainFolder ? mainFolder.name : 'loading...';
   const mainFolderId = mainFolder ?mainFolder.id :'loading ...'
 
   console.log(mainFolder?.name);
-  console.log(localStorage.getItem('selectedFolder'));
+  console.log(localStorage.getItem('selectedMediaFolder'));
   console.log(mainFolderName);  
 
     //--------------get Folders ----
     const fetchFolders = async () => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/jsonls/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/media/filter`, {
                 parent_id: parentId,
             });
             console.log("API Response:", result.data); // Log the entire response
@@ -73,8 +73,8 @@ const JSONLs: React.FC = () => {
         
     return (
         <>
-            <Breadcrumb pageName='JSONLs' />
-            <Folder folders={folders || []} title={"JSONLs's Folders"}  /> 
+            <Breadcrumb pageName='Media' />
+            <Folder folders={folders || []} title={"Media's Folders"}  /> 
             <div className='grid gap-9 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 mb-10'>
                 
                 {/* <InputText/> */}
@@ -95,7 +95,7 @@ const JSONLs: React.FC = () => {
 { files &&
             <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-4 gap-5">
                 <div className='col-span-3'>
-                <TableOne JSONLs={{
+                <TableOne Media={{
                         subFolder: {
                             id: '',
                             name: ''
@@ -162,4 +162,4 @@ const JSONLs: React.FC = () => {
     );
 }
 
-export default JSONLs;
+export default Media;

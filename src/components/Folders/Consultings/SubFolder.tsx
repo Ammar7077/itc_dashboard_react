@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FOLDER } from '../../../types/folder';
 import { useDispatch, useSelector } from 'react-redux';
-import { getMainFolder, getSubFolder, getSubFolders } from '../../../redux/JSONLs/JSONLsSlice';
+import { getMainFolder, getSubFolder, getSubFolders } from '../../../redux/Consultings/ConsultingsSlice';
 import axios from 'axios';
 import Breadcrumb from './Breadcrumb'; // Import your breadcrumb component
 
@@ -11,7 +11,7 @@ interface FolderProps {
 }
 
 interface RootState {
-    JSONLs: {
+    Consultings: {
         subfolders: FOLDER[];
     };
 }
@@ -20,10 +20,12 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
 
     // Redux 
     const { subfolders } = useSelector((state: RootState) => ({
-        subfolders: state.JSONLs.subfolders,
+        subfolders: state.Consultings.subfolders,
     }));
 
-    console.log("mainFolderId",mainFolderId);
+    console.log("mainFolderId consulting",mainFolderId);
+
+
     
 
     // useState for Breadcrumb "path" plus Selection icon
@@ -34,10 +36,10 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     // ------ Fetch SubFolders ------
     const fetchSubFolders = async (folderId: string) => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/jsonls/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/consultings/filter`, {
                 parent_id: folderId,
             });
-            console.log("resukt sub fodler",result);
+            console.log("resukt sub fodler sds",result.data);
             
             if (result.data) {
                 dispatch(getSubFolders(result.data));
@@ -54,7 +56,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     useEffect(() => {
         // Only fetch subfolders if the main folder is valid and selected
         if (!selectedSubfolder && mainFolderId) {
-            const savedFolder = localStorage.getItem('selectedJSONLsFolder');
+            const savedFolder = localStorage.getItem('selectedConsultingsFolder');
             if (savedFolder) {
                 const folderDetails = JSON.parse(savedFolder);
 
@@ -72,7 +74,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
         setBreadcrumbPath(prev => [...prev, subfolderDetails]); 
         dispatch(getSubFolder(subfolderDetails));
 
-        localStorage.setItem('selectedJSONLsSubFolder', JSON.stringify(subfolderDetails));
+        localStorage.setItem('selectedConsultingsSubFolder', JSON.stringify(subfolderDetails));
 
         fetchSubFolders(folder._id);
     };

@@ -42,7 +42,7 @@ const Ai: React.FC = () => {
     //--------------get Folders ----
     const fetchFolders = async () => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://192.168.1.116:3000/jsonls/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/jsonls/filter`, {
                 parent_id: parentId,
             });
             console.log("API Response:", result.data); // Log the entire response
@@ -72,7 +72,7 @@ const Ai: React.FC = () => {
         
     return (
         <>
-            <Breadcrumb pageName='aiss' />
+            <Breadcrumb pageName='AI' />
             <Folder folders={folders || []} title={"ais's Folders"}  /> 
             <div className='grid grid-cols-1 gap-9 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 mb-10'>
                 

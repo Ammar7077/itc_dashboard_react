@@ -7,6 +7,7 @@ import Ai from './pages/ais/Ai';
 import Consulting from './pages/consulting/Consulting';
 import AI from './pages/DataEntry/AI/AI';
 import JSONLs from './pages/JSONLs/JSONLs';
+import Media from './pages/Media/Media';
 
 function App() {
 
@@ -78,6 +79,17 @@ function App() {
         </>
       }
       />
+
+      <Route
+      path='/data/media'
+      element={
+        <>
+        <PageTitle title='Data of Media Folders'/>
+        <Media/>
+        </>
+      }
+      />
+
 
     {/* <!-- ===== adding pages here ===== --> */}
 

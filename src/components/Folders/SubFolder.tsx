@@ -31,7 +31,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     // ------ Fetch SubFolders ------
     const fetchSubFolders = async (folderId: string) => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://192.168.1.116:3000/ais/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/ais/filter`, {
                 parent_id: folderId,
             });
             if (result.data) {
