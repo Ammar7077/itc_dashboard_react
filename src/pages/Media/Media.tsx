@@ -96,6 +96,7 @@ const Media: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-4 gap-5">
                 <div className='col-span-3'>
                 <TableOne Media={{
+                    fileInfo,
                         subFolder: {
                             id: '',
                             name: ''

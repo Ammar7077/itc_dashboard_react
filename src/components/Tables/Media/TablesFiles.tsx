@@ -24,12 +24,14 @@ interface FolderProps {
   Media: {
     subFolder: MAIN;
     files: FILE[];
+    fileInfo:FILE
   };
 }
 
 const TableOne: React.FC<FolderProps> = () => {
 
-  const { subFolder, files } = useSelector((state: FolderProps) => ({
+  const { subFolder, files,fileInfo } = useSelector((state: FolderProps) => ({
+    fileInfo:state.Media.fileInfo,
     subFolder: state.Media.subFolder,
     files: state.Media.files
   }));
@@ -57,6 +59,11 @@ const TableOne: React.FC<FolderProps> = () => {
   const handleViewFile =(file:FILE)=>{
     dispatch(getFileInfo(file))
   }
+
+   // ------ download file
+
+  
+console.log(fileInfo);
 
 
   useEffect(() => {
@@ -157,7 +164,7 @@ const TableOne: React.FC<FolderProps> = () => {
                    />
                
                   <img src={download} alt="download" className="w-10 h-10 cursor-pointer"
-                   
+                   onClick={()=>handleViewFile(file)}
                    />
               </div>
             </div>

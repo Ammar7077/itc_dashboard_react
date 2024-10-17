@@ -22,6 +22,7 @@ import prePage from '../../../images/pageIcon/left-arrow.png'
 
 interface FolderProps {
   Consultings: {
+    fileInfo:FILE;
     subFolder: MAIN;
     files: FILE[];
   };
@@ -29,7 +30,8 @@ interface FolderProps {
 
 const TableOne: React.FC<FolderProps> = () => {
 
-  const { subFolder, files } = useSelector((state: FolderProps) => ({
+  const { subFolder, files,fileInfo } = useSelector((state: FolderProps) => ({
+    fileInfo:state.Consultings.fileInfo,
     subFolder: state.Consultings.subFolder,
     files: state.Consultings.files
   }));
@@ -57,6 +59,41 @@ const TableOne: React.FC<FolderProps> = () => {
   const handleViewFile =(file:FILE)=>{
     dispatch(getFileInfo(file))
   }
+
+  // download handling
+
+  const handleDownloadFile = async (file: FILE) => {
+    dispatch(getFileInfo(file));
+  
+    try {
+      const result = await axios.get(
+        `http://79.134.138.252:7111/ftp/download?filePath=${file.path?.pathString}`,
+        {
+          responseType: 'blob', 
+        }
+      );
+  
+      // response as a blob (Binary Large Object), which allows us to process file data. Set the responseType to 'blob'.
+      const blob = new Blob([result.data], { type: result.data.type });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      
+      // Create an anchor element
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = file.name; 
+      document.body.appendChild(link);
+      link.click();
+  
+      // Clean up the DOM by removing the link after download is triggered
+      document.body.removeChild(link);
+  
+      console.log("Download successfully");
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
+  
+  
 
 
   useEffect(() => {
@@ -157,7 +194,7 @@ const TableOne: React.FC<FolderProps> = () => {
                    />
                
                   <img src={download} alt="download" className="w-10 h-10 cursor-pointer"
-                   
+                    onClick={()=>handleDownloadFile(file)}
                    />
               </div>
             </div>
