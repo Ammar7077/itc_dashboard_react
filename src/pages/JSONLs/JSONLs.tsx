@@ -69,6 +69,14 @@ const JSONLs: React.FC = () => {
             fetchFolders();
             
         }, [parentId]); 
+
+        // Function to convert bytes to a human-readable format
+  const formatSize = (bytes: number) => {
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 B';
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${(bytes / (1024 ** i)).toFixed(2)} ${sizes[i]}`;
+  };
         
         
     return (
@@ -137,7 +145,7 @@ const JSONLs: React.FC = () => {
                     Size of file
                 </h3>
                 <p className="text-gray-900 font-bold text-lg hover:text-indigo-600 inline-block">
-                    {fileInfo.size} bytes
+                    {formatSize(fileInfo.size)} 
                 </p>
             </div>
 

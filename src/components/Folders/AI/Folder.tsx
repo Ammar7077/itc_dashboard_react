@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FOLDER } from '../../../types/folder';
 import { useDispatch } from 'react-redux';
-import { getMainFolder } from '../../../redux/AI/aisSlice';
+import { getMainFolder } from '../../../redux/JSONLs/JSONLsSlice';
 
 interface FolderProps {
     folders: FOLDER[];
@@ -10,38 +10,36 @@ interface FolderProps {
 }
 
 const Folder: React.FC<FolderProps> = ({ folders, title }) => {
+
     const [selectedFolder, setSelectedFolder] = useState<{ id: string; name: string } | null>(null);
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+
+    
 
     // Load saved folder from localStorage on component mount
     useEffect(() => {
-        const savedFolder = localStorage.getItem('selectedAIFolder');
+        const savedFolder = localStorage.getItem('selectedFolder');
         if (savedFolder) {
             try {
                 const folderDetails = JSON.parse(savedFolder);
-                setSelectedFolder(folderDetails);
-                dispatch(getMainFolder(folderDetails));
+                setSelectedFolder(folderDetails);   
+                dispatch(getMainFolder(folderDetails));  
             } catch (error) {
                 console.error('Error parsing saved folder data:', error);
             }
         }
-    }, [dispatch]);
+    }, [dispatch]);  
 
     // Function to handle folder click and store the selected folder details
     const handleFolderClick = (folder: FOLDER) => {
         const folderDetails = { id: folder._id, name: folder.name };
-
-        // Set the selected folder in local state
+        console.log("folderDetails",folderDetails);
+        
         setSelectedFolder(folderDetails);
-        // Dispatch action to update Redux state
-        dispatch(getMainFolder(folderDetails));
-        // Save to localStorage
-        localStorage.setItem('selectedAIFolder', JSON.stringify(folderDetails));
-
-        // Navigate to the subfolder view
-        navigate(`/consulting/${folder._id}`); // Ensure this route exists
+        dispatch(getMainFolder(folderDetails));  
+        localStorage.setItem('selectedFolder', JSON.stringify(folderDetails));  
     };
+
 
     return (
         <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -69,12 +67,12 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
                                     {folder.name} 
                                 </span>
                                 <div className='flex flex-1 gap-2'>
-                                    <span className='mt-1 text-amber-500 dark:text-white'>
-                                        {folder.total_files} Files 
-                                    </span>
-                                    <span className='mt-1 text-green-500 dark:text-white'>
-                                        {folder.total_folders} Folders 
-                                    </span>
+                                <span className='mt-1 text-amber-500 dark:text-white'>
+                                    {folder.total_files} Files 
+                                </span>
+                                <span className='mt-1 text-green-500 dark:text-white'>
+                                    {folder.total_folders} Folders 
+                                </span>
                                 </div>
                             </div>
                             <span className="ml-4 flex-shrink-0">

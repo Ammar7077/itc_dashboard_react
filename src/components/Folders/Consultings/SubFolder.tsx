@@ -119,8 +119,8 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
                             <div className="flex flex-col">
                                 <span className="font-medium text-sm">{folder.name}</span>
                                 <div className='flex flex-2 gap-2'>
-                                    <span className="mt-1 text-amber-500 dark:text-white">{folder.total_files} Files</span>
-                                    <span className="mt-1 text-green-500 dark:text-white">{folder.total_folders} Folders</span>
+                                    <span className="mt-1 text-amber-500 dark:text-white">{folder.total_files.toLocaleString()} Files</span>
+                                    <span className="mt-1 text-green-500 dark:text-white">{folder.total_folders.toLocaleString()} Folders</span>
                                 </div>
                             </div>
                         </Link>

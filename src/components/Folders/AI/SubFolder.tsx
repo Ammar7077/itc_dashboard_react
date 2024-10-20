@@ -11,18 +11,17 @@ interface FolderProps {
 }
 
 interface RootState {
-    ais: {
+    AI: {
         subfolders: FOLDER[];
     };
 }
 
 const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
+
     // Redux 
     const { subfolders } = useSelector((state: RootState) => ({
-        subfolders: state.ais.subfolders,
+        subfolders: state.AI.subfolders,
     }));
-
-    console.log("mainFolderId consulting", mainFolderId);
 
     // useState for Breadcrumb "path" plus Selection icon
     const [selectedSubfolder, setSelectedSubfolder] = useState<{ id: string; name: string } | null>(null);
@@ -35,8 +34,6 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
             const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/ais/filter`, {
                 parent_id: folderId,
             });
-            console.log("result sub folders", result.data);
-
             if (result.data) {
                 dispatch(getSubFolders(result.data));
             } else {
@@ -47,15 +44,21 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
         }
     };
 
-    // ------ Fetch on initial load and whenever selectedAIFolder changes ------
+    // ------ when a folder is selected or when one is in localStorage 
+
     useEffect(() => {
-        const savedFolder = localStorage.getItem('selectedAIFolder');
-        if (savedFolder) {
-            const folderDetails = JSON.parse(savedFolder);
-            setBreadcrumbPath([{ id: folderDetails.id, name: folderDetails.name }]);
-            fetchSubFolders(folderDetails.id);  // Fetch based on the saved folder ID
+        // Only fetch subfolders if the main folder is valid and selected
+        if (!selectedSubfolder && mainFolderId) {
+            const savedFolder = localStorage.getItem('selectedFolder');
+            if (savedFolder) {
+                const folderDetails = JSON.parse(savedFolder);
+
+                setBreadcrumbPath([{ id: folderDetails.id, name: folderDetails.name }]); 
+
+                fetchSubFolders(mainFolderId); 
+            }
         }
-    }, [dispatch]);
+    }, [mainFolderId, dispatch]);
 
     // Once the subfolder is clicked
     const handleFolderClick = (folder: FOLDER) => {
@@ -64,7 +67,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
         setBreadcrumbPath(prev => [...prev, subfolderDetails]); 
         dispatch(getSubFolder(subfolderDetails));
 
-        localStorage.setItem('selectedAISubFolder', JSON.stringify(subfolderDetails));
+        localStorage.setItem('selectedSubFolder', JSON.stringify(subfolderDetails));
 
         fetchSubFolders(folder._id);
     };
@@ -82,30 +85,25 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     return (
         <div>
             <Breadcrumb path={breadcrumbPath} onBreadcrumbClick={handleBreadcrumbClick} />
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-                {subfolders
-                    .filter((folder) => folder.document_type === "folder")
-                    .map((folder) => (
-                        <Link
-                            key={folder._id}
-                            to="#"
-                            onClick={() => handleFolderClick(folder)}
-                            aria-label={`Open folder ${folder.name}`}
-                            className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
-                                selectedSubfolder?.id === folder._id
-                                    ? 'bg-slate-900 text-white border-transparent'
-                                    : 'border-amber text-amber hover:bg-neutral-300 hover:border-white hover:text-black'
-                            }`}
-                        >
-                            <div className="flex flex-col">
-                                <span className="font-medium text-sm">{folder.name}</span>
-                                <div className='flex flex-2 gap-2'>
-                                    <span className="mt-1 text-amber-500 dark:text-white">{folder.total_files} Files</span>
-                                    <span className="mt-1 text-green-500 dark:text-white">{folder.total_folders} Folders</span>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
+            <div className="flex flex-wrap gap-2">
+                {subfolders.map((folder) => (
+                    <Link
+                        key={folder._id}
+                        to="#"
+                        onClick={() => handleFolderClick(folder)}
+                        aria-label={`Open folder ${folder.name}`}
+                        className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
+                            selectedSubfolder?.id === folder._id
+                                ? 'bg-slate-900 text-white border-transparent'
+                                : 'border-amber text-amber hover:bg-neutral-300 hover:border-white hover:text-black'
+                        }`}
+                    >
+                        <div className="flex flex-col">
+                            <span className="font-medium text-sm">{folder.name}</span>
+                            <span className="mt-1 text-amber-500 dark:text-white">{folder.total_files} Files</span>
+                        </div>
+                    </Link>
+                ))}
             </div>
         </div>
     );

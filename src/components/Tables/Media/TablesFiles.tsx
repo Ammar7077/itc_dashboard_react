@@ -107,6 +107,14 @@ console.log(fileInfo);
     }
   };
 
+  // Function to convert bytes to a human-readable format
+  const formatSize = (bytes: number) => {
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 B';
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${(bytes / (1024 ** i)).toFixed(2)} ${sizes[i]}`;
+  };
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 bg-slate-50">
       <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
@@ -150,7 +158,7 @@ console.log(fileInfo);
               </div>
 
               <div className="flex items-center justify-center p-2.5 xl:p-5">
-                <p className="text-meta-3">{file.size}</p>
+                <p className="text-meta-3">{formatSize(file.size)}</p>
               </div>
 
               <div className="hidden xl:flex sm:hidden flex items-center justify-center p-2.5 sm:flex xl:p-5">

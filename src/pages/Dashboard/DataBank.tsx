@@ -84,7 +84,7 @@ const DataBank: React.FC = () => {
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
       <div onClick={() => handleCardClick('JSONLs')} className="cursor-pointer">
-        <CardDataFolder title="JSONL" Size={folderJsonlsStats.totalSizeGB} NoOfFiles={folderJsonlsStats.totalFiles} levelUp>
+        <CardDataFolder title="JSONL" Size={folderJsonlsStats.totalSizeGB} NoOfFiles={folderJsonlsStats.totalFiles.toLocaleString()} levelUp>
           
         <svg
          xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +115,7 @@ const DataBank: React.FC = () => {
         </div>
 
         <div onClick={() => handleCardClick('ai')} className="cursor-pointer">
-        <CardDataFolder title="AI" Size={6562} NoOfFiles={20245651} levelUp>
+        <CardDataFolder title="AI" Size={"6.562 TB "} NoOfFiles={"20,245,651"} levelUp>
         <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 256 256"
@@ -148,7 +148,7 @@ const DataBank: React.FC = () => {
 
         <div onClick={() => handleCardClick('consultings')} className="cursor-pointer">
 
-        <CardDataFolder title="Consulting" Size={folderConsultingsStats.totalSizeGB} NoOfFiles={folderConsultingsStats.totalFiles} levelUp>
+        <CardDataFolder title="Consulting" Size={`${folderConsultingsStats.totalSizeGB} GB`} NoOfFiles={folderConsultingsStats.totalFiles.toLocaleString()} levelUp>
         <svg
          xmlns="http://www.w3.org/2000/svg"
          viewBox="0 0 256 256"
@@ -181,7 +181,7 @@ const DataBank: React.FC = () => {
 
         <div onClick={() => handleCardClick('media')} className="cursor-pointer">
 
-        <CardDataFolder title="Media" Size={folderMediaStats.totalSizeGB} NoOfFiles={folderMediaStats.totalFiles} levelDown>
+        <CardDataFolder title="Media" Size={`${folderMediaStats.totalSizeGB} GB`} NoOfFiles={folderMediaStats.totalFiles} levelDown>
         <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 256 256"

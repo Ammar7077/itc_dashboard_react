@@ -68,10 +68,10 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
                                 </span>
                                 <div className='flex flex-1 gap-2'>
                                 <span className='mt-1 text-amber-500 dark:text-white'>
-                                    {folder.total_files} Files 
+                                    {folder.total_files?.toLocaleString()} Files 
                                 </span>
                                 <span className='mt-1 text-green-500 dark:text-white'>
-                                    {folder.total_folders} Folders 
+                                    {folder.total_folders?.toLocaleString()} Folders 
                                 </span>
                                 </div>
                             </div>

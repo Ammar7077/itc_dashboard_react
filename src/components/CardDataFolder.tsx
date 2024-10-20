@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 
 interface CardDataFolderProps {
   title: string;
-  Size: number;
+  Size: string;
   NoOfFiles: number;
   levelUp?: boolean;
   levelDown?: boolean;
@@ -28,7 +28,7 @@ const CardDataFolder: React.FC<CardDataFolderProps> = ({
           <h4 className="text-title-md font-bold text-black dark:text-white">
           {title} 
           </h4>
-          <span className="text-sm font-medium">{Size} GB</span>
+          <span className="text-sm font-medium">{Size} </span>
         </div>
 
         <span
