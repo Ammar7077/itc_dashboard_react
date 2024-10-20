@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FOLDER, MAIN } from "../../../types/folder";
 import axios from "axios";
-import { getFileInfo, getFiles } from "../../../redux/JSONLs/JSONLsSlice";
+import { getFileInfo, getFiles } from "../../../redux/AI/aisSlice";
 import { FILE } from "../../../types/file";
 
 // File icons
@@ -21,7 +21,7 @@ import nextPage from '../../../images/pageIcon/next-page.png';
 import prePage from '../../../images/pageIcon/left-arrow.png';
 
 interface FolderProps {
-  JSONLs: {
+  AI: {
     fileInfo: FILE;
     subFolder: MAIN;
     files: FILE[];
@@ -29,9 +29,10 @@ interface FolderProps {
 }
 
 const TableOne: React.FC<FolderProps> = () => {
-  const { subFolder, files = [] } = useSelector((state: FolderProps) => ({
-    subFolder: state.JSONLs.subFolder,
-    files: state.JSONLs.files || [], // Set default to empty array
+  const { subFolder, files, fileInfo } = useSelector((state: FolderProps) => ({
+    fileInfo: state.AI.fileInfo,
+    subFolder: state.AI.subFolder,
+    files: state.AI.files,
   }));
 
   const subFolderId = subFolder?.id;
@@ -50,17 +51,15 @@ const TableOne: React.FC<FolderProps> = () => {
     setError(null);
 
     try {
-      const result = await axios.post<{ data: FILE[] }>(`http://79.134.138.252:7111/jsonls/filter`, {
+      const result = await axios.post<{ data: FILE[] }>(`http://79.134.138.252:7111/ais/filter`, {
         parent_id: subFolderId,
         limit: filesPerPage,
         page: page,
       });
 
-      console.log("newpagedata", result.data);
-
       if (result.data && result.data.length > 0) {
         dispatch(getFiles(result.data)); // Update Redux state with the new files
-        setHasNextPage(true); // If data is present, next page exists
+        setHasNextPage(result.data.length === filesPerPage); // If we received the exact number of files, assume there might be more
       } else {
         setHasNextPage(false); // No data means no next page
       }
@@ -72,7 +71,7 @@ const TableOne: React.FC<FolderProps> = () => {
     }
   };
 
-  // Trigger file fetching when subFolder changes or currentPage changes
+  // Trigger file fetching when subFolder or currentPage changes
   useEffect(() => {
     if (subFolderId) {
       fetchFiles(currentPage);
@@ -115,7 +114,7 @@ const TableOne: React.FC<FolderProps> = () => {
     }
   };
 
-  // Get file icon based on extension
+  // Get file icon based on the extension
   const getFileIcon = (fileName: string) => {
     const extension = fileName.split('.').pop()?.toLowerCase();
     switch (extension) {
@@ -132,7 +131,6 @@ const TableOne: React.FC<FolderProps> = () => {
     }
   };
 
-  // Filter out folders from files
   const filteredFiles = files.filter(file => file.document_type !== "folder");
 
   return (
@@ -161,7 +159,7 @@ const TableOne: React.FC<FolderProps> = () => {
         </div>
 
         {filteredFiles.map((file, key) => {
-          const fileIcon = getFileIcon(file.name); // Get the icon for the current file
+          const fileIcon = getFileIcon(file.name);
 
           return (
             <div
@@ -188,10 +186,16 @@ const TableOne: React.FC<FolderProps> = () => {
               </div>
 
               <div className="flex items-center justify-center gap-2 p-2.5 xl:p-5">
-                <img src={view} alt="view" className="w-10 h-10 cursor-pointer"
+                <img
+                  src={view}
+                  alt="view"
+                  className="w-10 h-10 cursor-pointer"
                   onClick={() => handleViewFile(file)}
                 />
-                <img src={download} alt="download" className="w-10 h-10 cursor-pointer"
+                <img
+                  src={download}
+                  alt="download"
+                  className="w-10 h-10 cursor-pointer"
                   onClick={() => handleDownloadFile(file)}
                 />
               </div>
@@ -207,7 +211,9 @@ const TableOne: React.FC<FolderProps> = () => {
             className={`w-8 h-8 cursor-pointer ${currentPage === 1 ? 'opacity-50' : ''}`}
             alt="Previous Page"
           />
-          <p className="mx-2 text-lg">Page {currentPage}</p>
+          <span className="mx-4 text-black font-bold dark:text-white">
+            Page {currentPage}
+          </span>
           <img
             src={nextPage}
             onClick={() => handlePageChange(currentPage + 1)}

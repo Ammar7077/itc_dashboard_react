@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FOLDER } from '../../../types/folder';
 import { useDispatch, useSelector } from 'react-redux';
-import { getMainFolder, getSubFolder, getSubFolders } from '../../../redux/JSONLs/JSONLsSlice';
+import { getMainFolder, getSubFolder, getSubFolders } from '../../../redux/AI/aisSlice';
 import axios from 'axios';
 import Breadcrumb from './Breadcrumb'; // Import your breadcrumb component
 
@@ -11,7 +11,7 @@ interface FolderProps {
 }
 
 interface RootState {
-    JSONLs: {
+    ais: {
         subfolders: FOLDER[];
     };
 }
@@ -19,24 +19,24 @@ interface RootState {
 const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     // Redux 
     const { subfolders } = useSelector((state: RootState) => ({
-        subfolders: state.JSONLs.subfolders,
+        subfolders: state.ais.subfolders,
     }));
 
-    console.log("mainFolderId", mainFolderId);
+    console.log("mainFolderId consulting", mainFolderId);
 
     // useState for Breadcrumb "path" plus Selection icon
     const [selectedSubfolder, setSelectedSubfolder] = useState<{ id: string; name: string } | null>(null);
-    const [breadcrumbPath, setBreadcrumbPath] = useState<{ id: string; name: string }[]>([]);
+    const [breadcrumbPath, setBreadcrumbPath] = useState<{ id: string; name: string }[]>([]); 
     const dispatch = useDispatch();
 
     // ------ Fetch SubFolders ------
     const fetchSubFolders = async (folderId: string) => {
         try {
-            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/jsonls/filter`, {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/ais/filter`, {
                 parent_id: folderId,
             });
-            console.log("result sub folder", result.data);
-            
+            console.log("result sub folders", result.data);
+
             if (result.data) {
                 dispatch(getSubFolders(result.data));
             } else {
@@ -47,13 +47,13 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
         }
     };
 
-    // ------ Fetch on initial load and whenever selectedJSONLsFolder changes ------
+    // ------ Fetch on initial load and whenever selectedAIFolder changes ------
     useEffect(() => {
-        const savedFolder = localStorage.getItem('selectedJSONLsFolder');
+        const savedFolder = localStorage.getItem('selectedAIFolder');
         if (savedFolder) {
             const folderDetails = JSON.parse(savedFolder);
             setBreadcrumbPath([{ id: folderDetails.id, name: folderDetails.name }]);
-            fetchSubFolders(folderDetails.id); // Fetch based on the saved folder ID
+            fetchSubFolders(folderDetails.id);  // Fetch based on the saved folder ID
         }
     }, [dispatch]);
 
@@ -61,17 +61,17 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     const handleFolderClick = (folder: FOLDER) => {
         const subfolderDetails = { id: folder._id, name: folder.name };
         setSelectedSubfolder(subfolderDetails);
-        setBreadcrumbPath(prev => [...prev, subfolderDetails]);
+        setBreadcrumbPath(prev => [...prev, subfolderDetails]); 
         dispatch(getSubFolder(subfolderDetails));
 
-        localStorage.setItem('selectedJSONLsSubFolder', JSON.stringify(subfolderDetails));
+        localStorage.setItem('selectedAISubFolder', JSON.stringify(subfolderDetails));
 
         fetchSubFolders(folder._id);
     };
 
     // Handle breadcrumb click to navigate to a previous folder and make it active
     const handleBreadcrumbClick = (clickedFolder: { id: string; name: string }) => {
-        setSelectedSubfolder(clickedFolder);
+        setSelectedSubfolder(clickedFolder); 
 
         const updatedPath = breadcrumbPath.slice(0, breadcrumbPath.findIndex(f => f.id === clickedFolder.id) + 1);
         setBreadcrumbPath(updatedPath);

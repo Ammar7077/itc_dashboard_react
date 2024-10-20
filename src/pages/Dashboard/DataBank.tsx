@@ -1,11 +1,91 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CardDataFolder from '../../components/CardDataFolder';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+interface FolderStats {
+  totalFiles: number;
+  totalFolders: number;
+  totalSizeGB: number; // Make sure this is a number
+}
 
 const DataBank: React.FC = () => {
+  const [folderJsonlsStats, setFolderJsonlsStats] = useState<FolderStats>({
+    totalFiles: 0,
+    totalFolders: 0,
+    totalSizeGB: 0,
+  });
+  const [folderAIStats, setFolderAIStats] = useState<FolderStats>({
+    totalFiles: 0,
+    totalFolders: 0,
+    totalSizeGB: 0,
+  });
+  const [folderConsultingsStats, setFolderConsultingsStats] = useState<FolderStats>({
+    totalFiles: 0,
+    totalFolders: 0,
+    totalSizeGB: 0,
+  });
+  const [folderMediaStats, setFolderMediaStats] = useState<FolderStats>({
+    totalFiles: 0,
+    totalFolders: 0,
+    totalSizeGB: 0,
+  });
+
+  const navigate = useNavigate();
+
+  // Fetch folder stats from API
+  const fetchFolders = async (url: string, setStats: React.Dispatch<React.SetStateAction<FolderStats>>) => {
+    try {
+      const result = await axios.post(url, {
+        parent_id: 'null',
+        path: 'ITC Databank',
+      });
+      console.log("API Response:", result.data);
+
+      if (result.data) {
+        // Initialize sums
+        let totalFiles = 0;
+        let totalFolders = 0;
+        let totalSizeBytes = 0;
+
+        // Iterate through the response array
+        result.data.forEach((folder: { total_files: number; total_folders: number; size: number }) => {
+          totalFiles += folder.total_files;
+          totalFolders += folder.total_folders;
+          totalSizeBytes += folder.size;
+        });
+
+        const totalSizeGB = (totalSizeBytes / (1024 ** 3)).toFixed(2); // Calculate size in GB
+
+        // Set the state with the computed totals
+        setStats({
+          totalFiles,
+          totalFolders,
+          totalSizeGB,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching folders:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFolders('http://79.134.138.252:7111/jsonls/filter', setFolderJsonlsStats);
+    fetchFolders('http://79.134.138.252:7111/consultings/filter', setFolderConsultingsStats);
+    fetchFolders('http://79.134.138.252:7111/ais/filter', setFolderAIStats);
+    fetchFolders('http://79.134.138.252:7111/media/filter', setFolderMediaStats);
+  }, []);
+
+  const handleCardClick = (folderType: string) => {
+    navigate(`/data/${folderType}`);
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataFolder title="JSONL" Size="12" NoOfFiles="123" levelUp>
+      <div onClick={() => handleCardClick('JSONLs')} className="cursor-pointer">
+        <CardDataFolder title="JSONL" Size={folderJsonlsStats.totalSizeGB} NoOfFiles={folderJsonlsStats.totalFiles} levelUp>
+          
         <svg
          xmlns="http://www.w3.org/2000/svg"
          viewBox="0 0 256 256"
@@ -31,9 +111,11 @@ const DataBank: React.FC = () => {
           />
           </g>
         </svg>
-
         </CardDataFolder>
-        <CardDataFolder title="AI" Size="200" NoOfFiles="435" levelUp>
+        </div>
+
+        <div onClick={() => handleCardClick('ai')} className="cursor-pointer">
+        <CardDataFolder title="AI" Size={6562} NoOfFiles={20245651} levelUp>
         <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 256 256"
@@ -61,7 +143,12 @@ const DataBank: React.FC = () => {
         </svg>
 
         </CardDataFolder>
-        <CardDataFolder title="Consulting" Size="240" NoOfFiles="2419" levelUp>
+
+        </div>
+
+        <div onClick={() => handleCardClick('consultings')} className="cursor-pointer">
+
+        <CardDataFolder title="Consulting" Size={folderConsultingsStats.totalSizeGB} NoOfFiles={folderConsultingsStats.totalFiles} levelUp>
         <svg
          xmlns="http://www.w3.org/2000/svg"
          viewBox="0 0 256 256"
@@ -89,7 +176,12 @@ const DataBank: React.FC = () => {
     </svg>
 
         </CardDataFolder>
-        <CardDataFolder title="Media" Size="34" NoOfFiles="9145" levelDown>
+
+        </div>
+
+        <div onClick={() => handleCardClick('media')} className="cursor-pointer">
+
+        <CardDataFolder title="Media" Size={folderMediaStats.totalSizeGB} NoOfFiles={folderMediaStats.totalFiles} levelDown>
         <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 256 256"
@@ -117,6 +209,8 @@ const DataBank: React.FC = () => {
 </svg>
 
         </CardDataFolder>
+
+        </div>
       </div>
 
    

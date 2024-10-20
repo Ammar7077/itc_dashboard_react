@@ -1,14 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 const aisSlice = createSlice({
-  name: "ais",
+  name: "AI",
   initialState: {
     folders: [],
     files: [],
     subfolders: [],
     subSubfolder:[],
-    mainFolder:localStorage.getItem('selectedFolder') || null,
-    subFolder:localStorage.getItem('selectedSubFolder') || null,
+    mainFolder:localStorage.getItem('selectedAIFolder') || null,
+    subFolder:localStorage.getItem('selectedAISubFolder') || null,
     categories:[],
+    fileInfo:null
   },
   reducers: {
     getFolders: (state,action)=>{
@@ -33,6 +34,9 @@ const aisSlice = createSlice({
     getCategoriesForMainFolder:(state,action)=>{
       state.categories=action.payload
     },
+    getFileInfo:(state,action)=>{
+      state.fileInfo= action.payload
+    }
   }
 
 });
@@ -42,6 +46,7 @@ export const {
     getMainFolder,
     getSubFolders,
     getSubFolder,
-    getSubSubfolders
+    getSubSubfolders,
+    getFileInfo,
 } = aisSlice.actions;
 export default aisSlice.reducer;

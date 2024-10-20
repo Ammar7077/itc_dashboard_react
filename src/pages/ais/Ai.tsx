@@ -1,9 +1,9 @@
 import React, { useEffect,useState } from 'react';
-import TableOne from '../../components/Tables/TablesFiles';
+import TableOne from '../../components/Tables/AI/TableFiles';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import MultiSelect from '../../components/Filteration/MultiSelect';
 import DatePickerOne from '../../components/Filteration/DatePickerOne';
-import Folder from '../../components/Folders/Folder';
+import Folder from '../../components/Folders/AI/Folder';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFiles, getFolders } from '../../redux/AI/aisSlice';
@@ -17,7 +17,7 @@ import CheckBoxSubFolder from '../../components/Folders/CheckBoxSubFolder';
 
 
 interface RootState {
-    ais: {
+    AI: {
         folders: FOLDER[];
         mainFolder:MAIN;
     };
@@ -28,8 +28,8 @@ const Ai: React.FC = () => {
     const dispatch = useDispatch();
 
     const { folders,mainFolder } = useSelector((state: RootState) => ({
-        folders: state.ais.folders,
-        mainFolder:state.ais.mainFolder
+        folders: state.AI.folders,
+        mainFolder:state.AI.mainFolder
     }));
 
   const mainFolderName = mainFolder ? mainFolder.name : 'loading...';
@@ -130,8 +130,23 @@ const Ai: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-10">
-                <TableOne ais={{
-                    folders: []
+                <TableOne AI={{
+                    fileInfo:{
+                        _id: "string",
+                        parent_id: "string",
+                        name: "string",
+                        size:0 ,
+                        extension:"string",
+                        document_type: "string",
+                        path:{
+                            pathString:"string"
+                        },
+                    },
+                    subFolder: {
+                        id: '',
+                        name: ''
+                    },
+                    files: [],
                 }} />
             </div> 
         </>

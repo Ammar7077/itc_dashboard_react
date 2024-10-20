@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FOLDER } from '../../../types/folder';
 import { useDispatch } from 'react-redux';
-import { getMainFolder } from '../../../redux/Consultings/ConsultingsSlice';
+import { getMainFolder } from '../../../redux/AI/aisSlice';
 
 interface FolderProps {
     folders: FOLDER[];
@@ -16,7 +16,7 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
 
     // Load saved folder from localStorage on component mount
     useEffect(() => {
-        const savedFolder = localStorage.getItem('selectedConsultingsFolder');
+        const savedFolder = localStorage.getItem('selectedAIFolder');
         if (savedFolder) {
             try {
                 const folderDetails = JSON.parse(savedFolder);
@@ -37,7 +37,7 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
         // Dispatch action to update Redux state
         dispatch(getMainFolder(folderDetails));
         // Save to localStorage
-        localStorage.setItem('selectedConsultingsFolder', JSON.stringify(folderDetails));
+        localStorage.setItem('selectedAIFolder', JSON.stringify(folderDetails));
 
         // Navigate to the subfolder view
         navigate(`/consulting/${folder._id}`); // Ensure this route exists

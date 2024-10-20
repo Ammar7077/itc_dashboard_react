@@ -38,6 +38,7 @@ const Consultings: React.FC = () => {
   console.log(localStorage.getItem('selectedConsultingsFolder'));
   console.log(mainFolderName);  
 
+
     //--------------get Folders ----
     const fetchFolders = async () => {
         try {
@@ -98,7 +99,7 @@ const Consultings: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-4 gap-5">
                 <div className='col-span-3'>
                 <TableOne Consultings={{
-                    fileInfo,
+                        fileInfo,
                         subFolder: {
                             id: '',
                             name: ''

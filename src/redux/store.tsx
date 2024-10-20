@@ -7,7 +7,7 @@ import mediaReducer from './Media/MediaSlice'
 export default configureStore({
   // the reducer object is empty for now but after creating reducers we add them to this object
   reducer: {
-    ais:aisReducer,
+    AI:aisReducer,
     JSONLs:JSONLsReducer,
     Consultings:consultingsReducer,
     Media:mediaReducer

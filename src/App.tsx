@@ -8,10 +8,11 @@ import Consulting from './pages/consulting/Consulting';
 import AI from './pages/DataEntry/AI/AI';
 import JSONLs from './pages/JSONLs/JSONLs';
 import Media from './pages/Media/Media';
+import Loader from './common/Loader';
 
 function App() {
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const {pathname} = useLocation()
 
   useEffect(()=>{
@@ -22,11 +23,9 @@ function App() {
     setTimeout(()=>setLoading(false), 1000)
   },[]);
 
-
   return loading ?(
-    <></>
+    <Loader/>
   ) :(
-    <>
     <DefaultLayout>
     <Routes>
 
@@ -34,7 +33,7 @@ function App() {
         index
         element={
           <>
-          <PageTitle title='Main Dashboard for Analysiz'/>
+          <PageTitle title='Main Dashboard'/>
           <DataBank/>
           </>
         }
@@ -44,7 +43,7 @@ function App() {
       path='/data/ai'
       element={
         <>
-        <PageTitle title='Data of AI Folder'/>
+        <PageTitle title='Data of AI'/>
         <Ai/>
         </>
       }
@@ -54,7 +53,7 @@ function App() {
       path='/data/consultings'
       element={
         <>
-        <PageTitle title='Data of Consulting Folder'/>
+        <PageTitle title='Data of Consulting'/>
         <Consulting/>
         </>
       }
@@ -74,7 +73,7 @@ function App() {
       path='/data/JSONLs'
       element={
         <>
-        <PageTitle title='Data of JSONLs Folders'/>
+        <PageTitle title='Data of JSONLs'/>
         <JSONLs/>
         </>
       }
@@ -84,7 +83,7 @@ function App() {
       path='/data/media'
       element={
         <>
-        <PageTitle title='Data of Media Folders'/>
+        <PageTitle title='Data of Media'/>
         <Media/>
         </>
       }
@@ -98,7 +97,6 @@ function App() {
 
     </Routes>
     </DefaultLayout>
-    </>
   )
 }
 

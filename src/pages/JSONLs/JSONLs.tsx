@@ -92,8 +92,9 @@ const JSONLs: React.FC = () => {
              </div>
 
             </div>
-{ files &&
-            <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-4 gap-5">
+
+            <div className={`grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 
+            ${ fileInfo ? "xl:grid-cols-4" : "xl:grid-cols-3" }  gap-5`}>
                 <div className='col-span-3'>
                 <TableOne JSONLs={{
                         fileInfo,
@@ -107,8 +108,8 @@ const JSONLs: React.FC = () => {
                 </div>
 
                 {fileInfo && (
-    <div className="flex justify-center items-center min-h-screen">
-        <div className="rounded-xl bg-slate-200 p-6 text-center shadow-xl max-w-lg dark:bg-boxdark">
+    <div className="flex flex-wrap justify-center items-center">
+        <div className="rounded-xl bg-slate-200 p-6 text-center shadow-xl dark:bg-boxdark">
             <div
                 className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-teal-400 shadow-lg shadow-teal-500/40">
                 <svg viewBox="0 0 33 46" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white">
@@ -136,7 +137,7 @@ const JSONLs: React.FC = () => {
                     Size of file
                 </h3>
                 <p className="text-gray-900 font-bold text-lg hover:text-indigo-600 inline-block">
-                    {fileInfo.size} KB
+                    {fileInfo.size} bytes
                 </p>
             </div>
 
@@ -158,7 +159,7 @@ const JSONLs: React.FC = () => {
 )}
 
 
-            </div>} 
+            </div>
         </>
     );
 }

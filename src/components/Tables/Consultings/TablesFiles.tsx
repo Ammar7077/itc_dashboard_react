@@ -17,91 +17,102 @@ import xlsxIcon from '../../../images/FilesIcon/xlsx.png';
 import docxIcon from '../../../images/FilesIcon/docx.png';
 import view from '../../../images/FilesIcon/research.png';
 import download from '../../../images/FilesIcon/download.png';
-import nextPage from '../../../images/pageIcon/next-page.png'
-import prePage from '../../../images/pageIcon/left-arrow.png'
+import nextPage from '../../../images/pageIcon/next-page.png';
+import prePage from '../../../images/pageIcon/left-arrow.png';
 
 interface FolderProps {
   Consultings: {
-    fileInfo:FILE;
+    fileInfo: FILE;
     subFolder: MAIN;
     files: FILE[];
   };
 }
 
 const TableOne: React.FC<FolderProps> = () => {
-
-  const { subFolder, files,fileInfo } = useSelector((state: FolderProps) => ({
-    fileInfo:state.Consultings.fileInfo,
+  const { subFolder, files, fileInfo } = useSelector((state: FolderProps) => ({
+    fileInfo: state.Consultings.fileInfo,
     subFolder: state.Consultings.subFolder,
-    files: state.Consultings.files
+    files: state.Consultings.files,
   }));
-  
 
   const subFolderId = subFolder?.id;
   const dispatch = useDispatch();
 
-  // Fetch Files
-  const fetchFiles = async () => {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const filesPerPage = 5; // Number of files per page
+  const [loading, setLoading] = useState(false); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
+  const [hasNextPage, setHasNextPage] = useState(true); // Track if there's a next page
+
+  // Fetch Files with pagination
+  const fetchFiles = async (page: number) => {
+    setLoading(true);
+    setError(null);
+
     try {
-      const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/Consultings/filter`, {
+      const result = await axios.post<{ data: FILE[] }>(`http://79.134.138.252:7111/Consultings/filter`, {
         parent_id: subFolderId,
+        limit: filesPerPage,
+        page: page,
       });
-      if (result.data) {
-        dispatch(getFiles(result.data));
+
+      if (result.data && result.data.length > 0) {
+        dispatch(getFiles(result.data)); // Update Redux state with the new files
+        setHasNextPage(result.data.length === filesPerPage); // If we received the exact number of files, assume there might be more
+      } else {
+        setHasNextPage(false); // No data means no next page
       }
     } catch (error) {
+      setError("Error fetching files");
       console.error("Error fetching files:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // view file
+  // Trigger file fetching when subFolder or currentPage changes
+  useEffect(() => {
+    if (subFolderId) {
+      fetchFiles(currentPage);
+    }
+  }, [subFolderId, currentPage]);
 
-  const handleViewFile =(file:FILE)=>{
-    dispatch(getFileInfo(file))
-  }
+  // Handle page changes
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && (newPage < currentPage || hasNextPage)) {
+      setCurrentPage(newPage);
+    }
+  };
 
-  // download handling
+  // Handle file view and download
+  const handleViewFile = (file: FILE) => {
+    dispatch(getFileInfo(file));
+  };
 
   const handleDownloadFile = async (file: FILE) => {
     dispatch(getFileInfo(file));
-  
+
     try {
       const result = await axios.get(
         `http://79.134.138.252:7111/ftp/download?filePath=${file.path?.pathString}`,
         {
-          responseType: 'blob', 
+          responseType: 'blob',
         }
       );
-  
-      // response as a blob (Binary Large Object), which allows us to process file data. Set the responseType to 'blob'.
+
       const blob = new Blob([result.data], { type: result.data.type });
       const downloadUrl = window.URL.createObjectURL(blob);
-      
-      // Create an anchor element
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = file.name; 
+      link.download = file.name;
       document.body.appendChild(link);
       link.click();
-  
-      // Clean up the DOM by removing the link after download is triggered
       document.body.removeChild(link);
-  
-      console.log("Download successfully");
     } catch (error) {
       console.error("Error downloading file:", error);
     }
   };
-  
-  
-
-
-  useEffect(() => {
-    if (subFolder) {
-      fetchFiles();
-    }
-
-  }, [dispatch, subFolderId]);
 
   // Get file icon based on the extension
   const getFileIcon = (fileName: string) => {
@@ -122,26 +133,14 @@ const TableOne: React.FC<FolderProps> = () => {
 
   const filteredFiles = files.filter(file => file.document_type !== "folder");
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const filesPerPage = 5;
-
-  // Pagination logic
-  const indexOfLastFile = currentPage * filesPerPage;
-  const indexOfFirstFile = indexOfLastFile - filesPerPage;
-  const currentFiles = filteredFiles.slice(indexOfFirstFile, indexOfLastFile);
-  const totalPages = Math.ceil(filteredFiles.length / filesPerPage);
-
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
-
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 bg-slate-50">
       <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
         Files in {subFolder?.name}
       </h4>
+
+      {loading && <p>Loading files...</p>}
+      {error && <p className="text-red-500">{error}</p>}
 
       <div className="flex flex-col">
         <div className="grid grid-cols-3 bg-slate-200 rounded-lg dark:bg-meta-4 m:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
@@ -157,16 +156,15 @@ const TableOne: React.FC<FolderProps> = () => {
           <div className="p-2.5 text-center xl:p-5">
             <h5 className="text-sm font-medium uppercase xsm:text-base">Actions</h5>
           </div>
-          
         </div>
 
-        {currentFiles.map((file, key) => {
-          const fileIcon = getFileIcon(file.name); // Get the icon for the current file
-          
+        {filteredFiles.map((file, key) => {
+          const fileIcon = getFileIcon(file.name);
+
           return (
             <div
               className={`grid grid-cols-3 m:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 ${
-                key === currentFiles.length - 1
+                key === filteredFiles.length - 1
                   ? ""
                   : "border-b border-stroke dark:border-strokedark"
               }`}
@@ -187,15 +185,19 @@ const TableOne: React.FC<FolderProps> = () => {
                 <p className="text-meta-3 ">{file.extension?.toUpperCase()}</p>
               </div>
 
-              {/* Actions Column */}
               <div className="flex items-center justify-center gap-2 p-2.5 xl:p-5">
-                  <img src={view} alt="view" className="w-10 h-10 cursor-pointer"
-                  onClick={()=>handleViewFile(file)}
-                   />
-               
-                  <img src={download} alt="download" className="w-10 h-10 cursor-pointer"
-                    onClick={()=>handleDownloadFile(file)}
-                   />
+                <img
+                  src={view}
+                  alt="view"
+                  className="w-10 h-10 cursor-pointer"
+                  onClick={() => handleViewFile(file)}
+                />
+                <img
+                  src={download}
+                  alt="download"
+                  className="w-10 h-10 cursor-pointer"
+                  onClick={() => handleDownloadFile(file)}
+                />
               </div>
             </div>
           );
@@ -203,17 +205,21 @@ const TableOne: React.FC<FolderProps> = () => {
 
         {/* Pagination Controls */}
         <div className="flex justify-center mt-4">
-          <img src={prePage}
-          onClick={() => handlePageChange(currentPage - 1)}
-          className="h-10"/>
-          <span className="mx-4 text-black font-bold dark:text-white">
-            Page {currentPage} of {totalPages}
-          </span>
-          
           <img
-           onClick={() => handlePageChange(currentPage + 1)}
-           src={nextPage} className="h-10"/>
-
+            src={prePage}
+            onClick={() => handlePageChange(currentPage - 1)}
+            className={`w-8 h-8 cursor-pointer ${currentPage === 1 ? 'opacity-50' : ''}`}
+            alt="Previous Page"
+          />
+          <span className="mx-4 text-black font-bold dark:text-white">
+            Page {currentPage}
+          </span>
+          <img
+            src={nextPage}
+            onClick={() => handlePageChange(currentPage + 1)}
+            className={`w-8 h-8 cursor-pointer ${!hasNextPage ? 'opacity-50' : ''}`}
+            alt="Next Page"
+          />
         </div>
       </div>
     </div>

@@ -2,8 +2,8 @@ import React, { ReactNode } from 'react';
 
 interface CardDataFolderProps {
   title: string;
-  Size: string;
-  NoOfFiles: string;
+  Size: number;
+  NoOfFiles: number;
   levelUp?: boolean;
   levelDown?: boolean;
   children: ReactNode;

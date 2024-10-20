@@ -10,11 +10,8 @@ interface FolderProps {
 }
 
 const Folder: React.FC<FolderProps> = ({ folders, title }) => {
-
     const [selectedFolder, setSelectedFolder] = useState<{ id: string; name: string } | null>(null);
     const dispatch = useDispatch();
-
-    
 
     // Load saved folder from localStorage on component mount
     useEffect(() => {
@@ -22,31 +19,28 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
         if (savedFolder) {
             try {
                 const folderDetails = JSON.parse(savedFolder);
-                setSelectedFolder(folderDetails);   
-                dispatch(getMainFolder(folderDetails));  
+                setSelectedFolder(folderDetails);
+                dispatch(getMainFolder(folderDetails));
             } catch (error) {
                 console.error('Error parsing saved folder data:', error);
             }
         }
-    }, [dispatch]);  
+    }, [dispatch]);
 
     // Function to handle folder click and store the selected folder details
     const handleFolderClick = (folder: FOLDER) => {
         const folderDetails = { id: folder._id, name: folder.name };
-        console.log("folderDetails",folderDetails);
-        
-        setSelectedFolder(folderDetails);
-        dispatch(getMainFolder(folderDetails));  
-        localStorage.setItem('selectedJSONLsFolder', JSON.stringify(folderDetails));  
-    };
+        console.log('folderDetails', folderDetails);
 
+        setSelectedFolder(folderDetails);
+        dispatch(getMainFolder(folderDetails));
+        localStorage.setItem('selectedJSONLsFolder', JSON.stringify(folderDetails));
+    };
 
     return (
         <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">
-                    {title}
-                </h3>
+                <h3 className="font-medium text-black dark:text-white">{title}</h3>
             </div>
 
             <div className="p-4 md:p-6 xl:p-9">
@@ -58,28 +52,26 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
                             onClick={() => handleFolderClick(folder)}
                             className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
                                 selectedFolder?.id === folder._id
-                                    ? 'bg-slate-900 text-white border-transparent' 
-                                    : 'border-amber text-amber hover:bg-neutral-300 hover:border-white hover:text-black' 
+                                    ? 'bg-slate-900 text-white border-transparent'
+                                    : 'border-amber text-amber hover:bg-neutral-300 hover:border-white hover:text-black'
                             }`}
                         >
                             <div className="flex flex-col">
-                                <span className="font-medium text-lg">
-                                    {folder.name} 
-                                </span>
-                                <div className='flex flex-1 gap-2'>
-                                <span className='mt-1 text-amber-500 dark:text-white'>
-                                    {folder.total_files} Files 
-                                </span>
-                                <span className='mt-1 text-green-500 dark:text-white'>
-                                    {folder.total_folders} Folders 
-                                </span>
+                                <span className="font-medium text-lg">{folder.name}</span>
+                                <div className="flex flex-1 gap-2">
+                                    <span className="mt-1 text-amber-500 dark:text-white">
+                                        {folder.total_files} Files
+                                    </span>
+                                    <span className="mt-1 text-green-500 dark:text-white">
+                                        {folder.total_folders} Folders
+                                    </span>
                                 </div>
                             </div>
-                            <span className="ml-4 flex-shrink-0">
+                            <span className="flex-shrink-0 overflow-hidden">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 512 512"
-                                    className="w-12 h-12"
+                                    className="w-12 h-12 max-w-full max-h-full"
                                     fill="none"
                                 >
                                     {/* SVG content */}

@@ -11,7 +11,7 @@ interface FolderProps {
 }
 
 interface RootState {
-    ais: {
+    AI: {
         subfolders: FOLDER[];
     };
 }
@@ -20,7 +20,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
 
     // Redux 
     const { subfolders } = useSelector((state: RootState) => ({
-        subfolders: state.ais.subfolders,
+        subfolders: state.AI.subfolders,
     }));
 
     // useState for Breadcrumb "path" plus Selection icon
