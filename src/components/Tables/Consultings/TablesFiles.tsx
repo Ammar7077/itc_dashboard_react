@@ -51,7 +51,9 @@ const TableOne: React.FC<FolderProps> = () => {
     setError(null);
 
     try {
-      const result = await axios.post<{ data: FILE[] }>(`http://79.134.138.252:7111/Consultings/filter`, {
+      const result = await axios.post<{
+        length: number; data: FILE[] 
+}>(`http://79.134.138.252:7111/Consultings/filter`, {
         parent_id: subFolderId,
         limit: filesPerPage,
         page: page,
@@ -143,9 +145,7 @@ const TableOne: React.FC<FolderProps> = () => {
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 bg-slate-50">
-      <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-        Files in {subFolder?.name}
-      </h4>
+      
 
       {loading && <p>Loading files...</p>}
       {error && <p className="text-red-500">{error}</p>}

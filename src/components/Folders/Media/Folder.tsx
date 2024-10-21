@@ -43,11 +43,7 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
 
     return (
         <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">
-                    {title}
-                </h3>
-            </div>
+            
 
             <div className="p-4 md:p-6 xl:p-9">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">

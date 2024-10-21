@@ -72,7 +72,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <NavLink to="/" className="flex items-center justify-start gap-2 md:gap-4 p-2 md:p-4">
           <img src={Logo} alt="Logo" className="w-16 rounded-full h-auto md:w-20 lg:w-24" />
           <span className="font-bold text-bodydark2 text-stone-300 md:text-lg lg:text-xl">
-            ITC - Data<span className='text-amber-500'>Bank</span>
+             Data<span className='text-amber-500'>bank</span>
           </span>
         </NavLink>
 
@@ -132,7 +132,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           d="M15.4689 9.92822H11.8971C10.9408 9.92822 10.1533 10.7157 10.1533 11.6719V15.2438C10.1533 16.2001 10.9408 16.9876 11.8971 16.9876H15.4689C16.4252 16.9876 17.2127 16.2001 17.2127 15.2438V11.7001C17.2127 10.7157 16.4252 9.92822 15.4689 9.92822ZM15.9752 15.3001C15.9752 15.5813 15.7502 15.8063 15.4689 15.8063H11.8971C11.6158 15.8063 11.3908 15.5813 11.3908 15.3001V11.7282C11.3908 11.4469 11.6158 11.2219 11.8971 11.2219H15.4689C15.7502 11.2219 15.9752 11.4469 15.9752 11.7282V15.3001Z"
                         />
                       </svg>
-                      <span className="whitespace-nowrap">Dashboard</span>
+                      <span className="whitespace-nowrap">Databank</span>
                       
                     </NavLink>
                   </React.Fragment>
@@ -200,7 +200,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       onClick={handleClick}
                     >
                       <img src={json} alt="JSON" className="w-5 h-5" />
-                      <span className="whitespace-nowrap">JSON</span>
+                      <span className="whitespace-nowrap">JSONL</span>
                       
                     </NavLink>
                   </React.Fragment>

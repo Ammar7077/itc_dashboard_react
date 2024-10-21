@@ -9,13 +9,20 @@ const aisSlice = createSlice({
     mainFolder:localStorage.getItem('selectedAIFolder') || null,
     subFolder:localStorage.getItem('selectedAISubFolder') || null,
     categories:[],
-    fileInfo:null
+    fileInfo:null,
+    fileId:"idf",
+    folderIdSub:"dsd"
   },
   reducers: {
     getFolders: (state,action)=>{
         state.folders=action.payload;
     },
-
+    getFolderIdSub:(state,action)=>{
+      state.folderIdSub=action.payload
+    },
+    getfolderId:(state,action)=>{
+      state.fileId=action.payload;
+    },
     getFiles :(state,action)=>{
         state.files =action.payload;
     },
@@ -48,5 +55,7 @@ export const {
     getSubFolder,
     getSubSubfolders,
     getFileInfo,
+    getfolderId,
+    getFolderIdSub
 } = aisSlice.actions;
 export default aisSlice.reducer;

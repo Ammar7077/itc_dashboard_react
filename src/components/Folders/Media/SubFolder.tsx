@@ -92,7 +92,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     const filterData = async () => {
       try {
         const result = await axios.post<{ data: any[] }>(
-          `http://79.134.138.252:7111/jsonls/filter`,
+          `http://79.134.138.252:7111/media/filter`,
           {
             ...filterBody,
             path: breadcrumbPath.map((item) => item.name).join("/"),

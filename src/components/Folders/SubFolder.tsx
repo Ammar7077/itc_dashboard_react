@@ -61,6 +61,18 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
         }
     }, [mainFolderId, dispatch]);
 
+    /* useEffect(() => {
+    if (!selectedSubfolder && mainFolderId) {
+        const savedFolder = localStorage.getItem('selectedFolder');
+        if (savedFolder) {
+            const folderDetails = JSON.parse(savedFolder);
+            setBreadcrumbPath([{ id: folderDetails.id, name: folderDetails.name }]);
+            fetchSubFolders(mainFolderId);
+        }
+    }
+}, [mainFolderId, selectedSubfolder]);
+ */
+
     // Once the subfolder is clicked
     const handleFolderClick = (folder: FOLDER) => {
         const subfolderDetails = { id: folder._id, name: folder.name };
@@ -88,7 +100,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     const filterData = async () => {
       try {
         const result = await axios.post<{ data: any[] }>(
-          `http://79.134.138.252:7111/consultings/filter`,
+          `http://79.134.138.252:7111/ais/filter`,
           {
             ...filterBody,
             path: breadcrumbPath.map((item) => item.name).join("/"),

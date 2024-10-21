@@ -23,6 +23,57 @@ interface RootState {
 const Ai: React.FC = () => {
     const [parentId, setParentId] = useState<string>("null");
     const dispatch = useDispatch();
+    const [folderId, setFolderId] = useState("second")
+
+    const list = [
+        {
+             _id: "Books",
+            parent_id: "0",
+            name: "Books",
+            total_files: "2875",
+            total_folders: "3",
+            document_type:"0",
+        },{
+             _id: "Reasoning",
+            parent_id: "0",
+            name: "Reasoning",
+            total_files: "0",
+            total_folders: "0",
+            document_type:"0",
+        },{
+             _id: "Evals",
+            parent_id: "0",
+            name: "Evals",
+            total_files: "0",
+            total_folders: "0",
+            document_type:"0",
+        },
+    ]
+
+    /*
+    {
+            _id: "Arts",
+            parent_id: "string",
+            name: "Books OCRed Arts",
+            total_files: "0",
+            total_folders: "0",
+            document_type:"0",
+        },{
+             _id: "Dictionaries",
+            parent_id: "Books OCRed Dictionaries",
+            name: "Books OCRed Dictionarie",
+            total_files: "0",
+            total_folders: "0",
+            document_type:"0",
+        },{
+             _id: "Engineering",
+            parent_id: "0",
+            name: "Books OCRed Engineering",
+            total_files: "0",
+            total_folders: "0",
+            document_type:"0",
+        }, 
+     */
 
     const { folders,mainFolder,fileInfo,files } = useSelector((state: RootState) => ({
         folders: state.AI.folders,
@@ -40,14 +91,14 @@ const Ai: React.FC = () => {
 
 
     //--------------get Folders ----
-    const fetchFolders = async () => {
+    /* const fetchFolders = async () => {
         try {
             const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/ais/filter`, {
                 parent_id: parentId,
             });
             console.log("API Response:", result.data); // Log the entire response
             if (result.data) {
-                dispatch(getFolders(result.data)); 
+                dispatch(getFolders(list)); 
             
             } else {
                 console.warn("No data found in API response");
@@ -56,7 +107,7 @@ const Ai: React.FC = () => {
             console.error("Error fetching folders:", error);
         }
     };    
-
+ */
     // ---------------get files ----
     // may we add path side to Folder Name on the title to move on the second folders once click on it
 
@@ -77,32 +128,28 @@ const Ai: React.FC = () => {
    
 
         useEffect(() => {
-            fetchFolders();
-            
-        }, [parentId]); 
+            dispatch(getFolders(list));             
+        }, []); 
         
         
     return (
         <>
             <Breadcrumb pageName='AI' />
             <Folder folders={folders || []} title={"AI's Folders"}  /> 
-            <div className='grid gap-9 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 mb-10'>
-                
-                {/* <InputText/> */}
 
-                 {/* <!-- Checkbox and radio --> */}
-             <div className="col-span-4 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ">
-                <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-                     <h3 className="font-medium text-black dark:text-white">
-                     Subfolders on {mainFolderName}
-                    </h3>
-                </div>
-                <div className="flex flex-col gap-5.5 p-2">
-                <SubFolder mainFolderId={mainFolderId}/>
-                </div>
-             </div>
 
-            </div>
+            <div className="grid gap-9 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 mb-10">
+        {/* <InputText/> */}
+
+        {/* <!-- Checkbox and radio --> */}
+        <div className="col-span-4 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ">
+          
+          <div className="flex flex-col gap-5.5 p-2">
+            <SubFolder mainFolderId={mainFolderId} />
+          </div>
+        </div>
+      </div>
+         
 { files &&
             <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-4 gap-5">
                 <div className='col-span-3'>
