@@ -174,7 +174,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             <React.Fragment>
                               <NavLink
                                 to="data/ai"
-                                className={` group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium bg-white duration-300 ease-in-out hover:bg-white hover:bg-meta-4 hover:text-white`}
+                                className={` group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium bg-white duration-300 ease-in-out hover:bg-meta-4 hover:text-white`}
                                 onClick={handleClick}
                               >
                                 <img src={ai} alt="AI" className="w-5 h-5" />
@@ -191,7 +191,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             <React.Fragment>
                               <NavLink
                                 to="data/consultings"
-                                className={` group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium bg-white duration-300 ease-in-out hover:bg-white hover:bg-meta-4 hover:text-white`}
+                                className={` group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium bg-white duration-300 ease-in-out hover:bg-meta-4 hover:text-white`}
                                 onClick={handleClick}
                               >
                                 <img src={consulting} alt="Consulting" className="w-5 h-5" />
@@ -208,7 +208,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             <React.Fragment>
                               <NavLink
                                 to="data/media"
-                                className={` group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium bg-white duration-300 ease-in-out hover:bg-white hover:bg-meta-4 hover:text-white`}
+                                className={` group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium bg-white duration-300 ease-in-out hover:bg-meta-4 hover:text-white`}
                                 onClick={handleClick}
                               >
                                 <img src={media} alt="Media" className="w-5 h-5" />
@@ -227,7 +227,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             <React.Fragment>
                               <NavLink
                                 to="data/JSONLs"
-                                className={` group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium bg-white duration-300 ease-in-out hover:bg-white hover:bg-meta-4 hover:text-white`}
+                                className={` group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium bg-white duration-300 ease-in-out hover:bg-meta-4 hover:text-white`}
                                 onClick={handleClick}
                               >
                                 <img src={json} alt="JSON" className="w-5 h-5" />
