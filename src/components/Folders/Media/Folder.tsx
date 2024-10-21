@@ -40,6 +40,8 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
         localStorage.setItem('selectedMediaFolder', JSON.stringify(folderDetails));  
     };
 
+    
+
 
     return (
         <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

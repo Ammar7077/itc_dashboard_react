@@ -206,59 +206,6 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
             />
           </div>
         </div>
-        {/* <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Max Files Number
-          </label>
-          <input
-            onChange={(event) => {
-              const max_files_number = event.target.value;
-              setFilterBody((prevBody) => ({
-                ...prevBody,
-                max_files_number: +max_files_number,
-              }));
-            }}
-            type="number"
-            id="maxFilesNumber"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div> */}
-        {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Min Folders Number
-            </label>
-            <input
-              onChange={(event) => {
-                const min_folders_number = event.target.value;
-                setFilterBody((prevBody) => ({
-                  ...prevBody,
-                  min_folders_number: +min_folders_number,
-                }));
-              }}
-              type="number"
-              id="minFoldersNumber"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Max Folders Number
-            </label>
-            <input
-              onChange={(event) => {
-                const max_folders_number = event.target.value;
-                setFilterBody((prevBody) => ({
-                  ...prevBody,
-                  max_folders_number: +max_folders_number,
-                }));
-              }}
-              type="number"
-              id="maxFoldersNumber"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-        </div> */}
       </div>
       <div className="mt-6">
         <button
