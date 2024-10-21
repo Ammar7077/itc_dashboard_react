@@ -9,6 +9,7 @@ import {
 } from "../../../redux/JSONLs/JSONLsSlice";
 import axios from "axios";
 import Breadcrumb from "./Breadcrumb"; // Import your breadcrumb component
+import { StaticFolderSvg } from "../../Static/folder.svg";
 
 interface FolderProps {
   mainFolderId: string;
@@ -218,7 +219,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
             />
           </div>
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700">
             Max Files Number
           </label>
@@ -234,8 +235,8 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
             id="maxFilesNumber"
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        </div> */}
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Min Folders Number
@@ -270,7 +271,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="mt-6">
         <button
@@ -296,13 +297,13 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
               to="#"
               onClick={() => handleFolderClick(folder)}
               aria-label={`Open folder ${folder.name}`}
-              className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
-                selectedSubfolder?.id === folder._id
+              className={`flex items-center justify-between p-4 rounded-lg border transition-all ${selectedSubfolder?.id === folder._id
                   ? "bg-slate-900 text-white border-transparent"
                   : "border-amber text-amber hover:bg-neutral-300 hover:border-white hover:text-black"
-              }`}
+                }`}
             >
               <div className="flex flex-col">
+                {StaticFolderSvg}
                 <span className="font-medium text-sm">{folder.name}</span>
                 <div className="flex flex-2 gap-2">
                   <span className="mt-1 text-amber-500 dark:text-white">

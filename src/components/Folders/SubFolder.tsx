@@ -6,6 +6,7 @@ import { getMainFolder, getSubFolder, getSubFolders } from '../../redux/AI/aisSl
 import axios from 'axios';
 import Breadcrumb from './Breadcrumb'; // Import your breadcrumb component
 import { getFiles } from '../../redux/Media/MediaSlice';
+import { StaticFolderSvg } from '../Static/folder.svg';
 
 interface FolderProps {
     mainFolderId: string;
