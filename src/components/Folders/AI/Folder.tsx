@@ -1,70 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FOLDER, MAIN } from '../../../types/folder';
-import { useDispatch, useSelector } from 'react-redux';
-import { getMainFolder } from '../../../redux/JSONLs/JSONLsSlice';
-import { getFileInfo, getFiles, getfolderId } from '../../../redux/AI/aisSlice';
-import axios from 'axios';
-import { FILE } from '../../../types/file';
+import { Link, useNavigate } from 'react-router-dom';
+import { FOLDER } from '../../../types/folder';
+import { useDispatch } from 'react-redux';
+import { getMainFolder } from '../../../redux/AI/aisSlice';
 import { StaticFolderSvg } from '../../Static/folder.svg';
 
 interface FolderProps {
     folders: FOLDER[];
     title: string;
-
 }
-interface StateProps {
-    AI: {
-        fileInfo: FILE;
-        subFolder: MAIN;
-        files: FILE[];
-        fileId: string
-    };
-}
-
 
 const Folder: React.FC<FolderProps> = ({ folders, title }) => {
-
     const [selectedFolder, setSelectedFolder] = useState<{ id: string; name: string } | null>(null);
     const dispatch = useDispatch();
-
-    const { fileId } = useSelector((state: StateProps) => ({
-        fileInfo: state.AI.fileInfo,
-        subFolder: state.AI.subFolder,
-        files: state.AI.files,
-        fileId: state.AI.fileId,
-    }));
-
-    console.log("log", fileId);
-
-    const fetchFiles = async () => {
-        //setLoading(true);
-
-        try {
-            const result = await axios.post<{
-                length: number; data: FILE[]
-            }>(`http://79.134.138.252:7111/ais/filter`, {
-                path: fileId
-            });
-
-            if (result.data && result.data.length > 0) {
-                console.log("resusot jfbsd skabc as",result.data);
-                
-                dispatch(getFiles(result.data)); // Update Redux state with the new files
-            }
-
-        } catch (error) {
-            console.error("Error fetching files:", error);
-        }
-    };
-
-    ///console.log("log sdsdds", fileId);
-    
-
+    const navigate = useNavigate();
 
     // Load saved folder from localStorage on component mount
     useEffect(() => {
-        const savedFolder = localStorage.getItem('selectedFolder');
+        const savedFolder = localStorage.getItem('selectedAIFolder');
         if (savedFolder) {
             try {
                 const folderDetails = JSON.parse(savedFolder);
@@ -79,18 +32,21 @@ const Folder: React.FC<FolderProps> = ({ folders, title }) => {
     // Function to handle folder click and store the selected folder details
     const handleFolderClick = (folder: FOLDER) => {
         const folderDetails = { id: folder._id, name: folder.name };
-        console.log("folderDetails", folderDetails);
-        dispatch(getfolderId(folder._id))
-        fetchFiles()
-        setSelectedFolder(folderDetails);
-        dispatch(getMainFolder(folderDetails));
-        localStorage.setItem('selectedFolder', JSON.stringify(folderDetails));
-    };
 
+        // Set the selected folder in local state
+        setSelectedFolder(folderDetails);
+        // Dispatch action to update Redux state
+        dispatch(getMainFolder(folderDetails));
+        // Save to localStorage
+        localStorage.setItem('selectedAIFolder', JSON.stringify(folderDetails));
+
+        // Navigate to the subfolder view
+        navigate(`/consulting/${folder._id}`); // Ensure this route exists
+    };
 
     return (
         <div className="mb-5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            
+
 
             <div className="p-4 md:p-6 xl:p-9">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">

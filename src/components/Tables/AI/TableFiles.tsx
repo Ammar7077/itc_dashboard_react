@@ -25,20 +25,16 @@ interface FolderProps {
     fileInfo: FILE;
     subFolder: MAIN;
     files: FILE[];
-    fileId:string
   };
 }
 
 const TableOne: React.FC<FolderProps> = () => {
-  const { subFolder, files, fileInfo,fileId } = useSelector((state: FolderProps) => ({
+  const { subFolder, files, fileInfo } = useSelector((state: FolderProps) => ({
     fileInfo: state.AI.fileInfo,
     subFolder: state.AI.subFolder,
     files: state.AI.files,
-    fileId:state.AI.fileId,
   }));
 
-  console.log("fileId",fileId);
-  
   const subFolderId = subFolder?.id;
   const dispatch = useDispatch();
 
@@ -51,14 +47,16 @@ const TableOne: React.FC<FolderProps> = () => {
 
   // Fetch Files with pagination
   const fetchFiles = async (page: number) => {
-    //setLoading(true);
+    setLoading(true);
     setError(null);
 
     try {
       const result = await axios.post<{
-          length: number; data: FILE[] 
+        length: number; data: FILE[] 
 }>(`http://79.134.138.252:7111/ais/filter`, {
-        path:fileId
+        parent_id: subFolderId,
+        limit: filesPerPage,
+        page: page,
       });
 
       if (result.data && result.data.length > 0) {
@@ -74,9 +72,6 @@ const TableOne: React.FC<FolderProps> = () => {
       setLoading(false);
     }
   };
-
-  console.log(files);
-  
 
   // Trigger file fetching when subFolder or currentPage changes
   useEffect(() => {
@@ -121,9 +116,6 @@ const TableOne: React.FC<FolderProps> = () => {
     }
   };
 
-  console.log("log insdsdsd test", files);
-  
-
   // Get file icon based on the extension
   const getFileIcon = (fileName: string) => {
     const extension = fileName.split('.').pop()?.toLowerCase();
@@ -148,8 +140,8 @@ const TableOne: React.FC<FolderProps> = () => {
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return `${(bytes / (1024 ** i)).toFixed(2)} ${sizes[i]}`;
   };
-
-  const filteredFiles = files.filter(file => file.document_type == "file");
+  
+  const filteredFiles = files.filter(file => file.document_type !== "folder");
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 bg-slate-50">
@@ -174,9 +166,8 @@ const TableOne: React.FC<FolderProps> = () => {
           </div>
         </div>
 
-        {files.map((file, key) => {
+        {filteredFiles.map((file, key) => {
           const fileIcon = getFileIcon(file.name);
-          if(file.document_type == "folder") return (<></>);
 
           return (
             <div

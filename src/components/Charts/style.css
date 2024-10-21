@@ -1,0 +1,10 @@
+@keyframes bake-pie {
+    from {
+      transform: rotate(0deg);
+    }
+  }
+  
+  .clip-right {
+    clip: rect(0px, 200px, 200px, 100px);
+  }
+  

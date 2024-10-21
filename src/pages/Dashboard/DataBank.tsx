@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CardDataFolder from '../../components/CardDataFolder';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import ChartOne from '../../components/Charts/ChartOne';
 
 interface FolderStats {
   totalFiles: number;
@@ -86,7 +87,7 @@ const DataBank: React.FC = () => {
 
 
         <div onClick={() => handleCardClick('ai')} className="cursor-pointer">
-          <CardDataFolder title="AI" Size={"6.562 TB "} NoOfFiles={"20,245,651"} levelUp>
+          <CardDataFolder title="AI" Size={"6.562 TB "} NoOfFiles={"151,154"} levelUp>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 256 256"
@@ -214,7 +215,7 @@ const DataBank: React.FC = () => {
         </div>
       </div>
 
-
+<ChartOne/>
     </>
   );
 };
