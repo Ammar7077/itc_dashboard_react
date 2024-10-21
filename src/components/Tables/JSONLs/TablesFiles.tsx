@@ -6,19 +6,19 @@ import { getFileInfo, getFiles } from "../../../redux/JSONLs/JSONLsSlice";
 import { FILE } from "../../../types/file";
 
 // File icons
-import pdfIcon from '../../../images/FilesIcon/pdf.png';
-import docIcon from '../../../images/FilesIcon/doc.png';
-import excelIcon from '../../../images/FilesIcon/excel.png';
-import jpgIcon from '../../../images/FilesIcon/jpg.png';
-import pngIcon from '../../../images/FilesIcon/png.png';
-import jsonlIcon from '../../../images/FilesIcon/json.png';
-import txtIcon from '../../../images/FilesIcon/txt.png';
-import xlsxIcon from '../../../images/FilesIcon/xlsx.png';
-import docxIcon from '../../../images/FilesIcon/docx.png';
-import view from '../../../images/FilesIcon/research.png';
-import download from '../../../images/FilesIcon/download.png';
-import nextPage from '../../../images/pageIcon/next-page.png';
-import prePage from '../../../images/pageIcon/left-arrow.png';
+import pdfIcon from "../../../images/FilesIcon/pdf.png";
+import docIcon from "../../../images/FilesIcon/doc.png";
+import excelIcon from "../../../images/FilesIcon/excel.png";
+import jpgIcon from "../../../images/FilesIcon/jpg.png";
+import pngIcon from "../../../images/FilesIcon/png.png";
+import jsonlIcon from "../../../images/FilesIcon/json.png";
+import txtIcon from "../../../images/FilesIcon/txt.png";
+import xlsxIcon from "../../../images/FilesIcon/xlsx.png";
+import docxIcon from "../../../images/FilesIcon/docx.png";
+import view from "../../../images/FilesIcon/research.png";
+import download from "../../../images/FilesIcon/download.png";
+import nextPage from "../../../images/pageIcon/next-page.png";
+import prePage from "../../../images/pageIcon/left-arrow.png";
 
 interface FolderProps {
   JSONLs: {
@@ -50,14 +50,18 @@ const TableOne: React.FC<FolderProps> = () => {
     setError(null);
 
     try {
-      const result = await axios.post<{ data: FILE[] }>(`http://79.134.138.252:7111/jsonls/filter`, {
-        parent_id: subFolderId,
-        limit: filesPerPage,
-        page: page,
-      });
+      const result = await axios.post<{ data: FILE[] }>(
+        `http://79.134.138.252:7111/jsonls/filter`,
+        {
+          parent_id: subFolderId,
+          limit: filesPerPage,
+          page: page,
+        }
+      );
 
       console.log("newpagedata", result.data);
 
+      // if (result.data && result.data.length > 0) {
       if (result.data && result.data.length > 0) {
         dispatch(getFiles(result.data)); // Update Redux state with the new files
         setHasNextPage(true); // If data is present, next page exists
@@ -98,13 +102,13 @@ const TableOne: React.FC<FolderProps> = () => {
       const result = await axios.get(
         `http://79.134.138.252:7111/ftp/download?filePath=${file.path?.pathString}`,
         {
-          responseType: 'blob',
+          responseType: "blob",
         }
       );
 
       const blob = new Blob([result.data], { type: result.data.type });
       const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = downloadUrl;
       link.download = file.name;
       document.body.appendChild(link);
@@ -117,18 +121,28 @@ const TableOne: React.FC<FolderProps> = () => {
 
   // Get file icon based on extension
   const getFileIcon = (fileName: string) => {
-    const extension = fileName.split('.').pop()?.toLowerCase();
+    const extension = fileName.split(".").pop()?.toLowerCase();
     switch (extension) {
-      case 'pdf': return pdfIcon;
-      case 'doc': return docIcon;
-      case 'docx': return docxIcon;
-      case 'txt': return txtIcon;
-      case 'jsonl': return jsonlIcon;
-      case 'jpg': return jpgIcon;
-      case 'xls': return excelIcon;
-      case 'png': return pngIcon;
-      case 'xlsx': return xlsxIcon;
-      default: return pdfIcon;
+      case "pdf":
+        return pdfIcon;
+      case "doc":
+        return docIcon;
+      case "docx":
+        return docxIcon;
+      case "txt":
+        return txtIcon;
+      case "jsonl":
+        return jsonlIcon;
+      case "jpg":
+        return jpgIcon;
+      case "xls":
+        return excelIcon;
+      case "png":
+        return pngIcon;
+      case "xlsx":
+        return xlsxIcon;
+      default:
+        return pdfIcon;
     }
   };
 
@@ -141,7 +155,7 @@ const TableOne: React.FC<FolderProps> = () => {
   };
 
   // Filter out folders from files
-  const filteredFiles = files.filter(file => file.document_type !== "folder");
+  const filteredFiles = files.filter((file) => file.document_type !== "folder");
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 bg-slate-50">
@@ -155,16 +169,24 @@ const TableOne: React.FC<FolderProps> = () => {
       <div className="flex flex-col">
         <div className="grid grid-cols-3 bg-slate-200 rounded-lg dark:bg-meta-4 m:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Name</h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              Name
+            </h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Size</h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              Size
+            </h5>
           </div>
           <div className="hidden p-2.5 text-center items-center justify-center xl:flex sm:hidden xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Extension</h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              Extension
+            </h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Actions</h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              Actions
+            </h5>
           </div>
         </div>
 
@@ -196,10 +218,16 @@ const TableOne: React.FC<FolderProps> = () => {
               </div>
 
               <div className="flex items-center justify-center gap-2 p-2.5 xl:p-5">
-                <img src={view} alt="view" className="w-10 h-10 cursor-pointer"
+                <img
+                  src={view}
+                  alt="view"
+                  className="w-10 h-10 cursor-pointer"
                   onClick={() => handleViewFile(file)}
                 />
-                <img src={download} alt="download" className="w-10 h-10 cursor-pointer"
+                <img
+                  src={download}
+                  alt="download"
+                  className="w-10 h-10 cursor-pointer"
                   onClick={() => handleDownloadFile(file)}
                 />
               </div>
@@ -212,14 +240,18 @@ const TableOne: React.FC<FolderProps> = () => {
           <img
             src={prePage}
             onClick={() => handlePageChange(currentPage - 1)}
-            className={`w-8 h-8 cursor-pointer ${currentPage === 1 ? 'opacity-50' : ''}`}
+            className={`w-8 h-8 cursor-pointer ${
+              currentPage === 1 ? "opacity-50" : ""
+            }`}
             alt="Previous Page"
           />
           <p className="mx-2 text-lg">Page {currentPage}</p>
           <img
             src={nextPage}
             onClick={() => handlePageChange(currentPage + 1)}
-            className={`w-8 h-8 cursor-pointer ${!hasNextPage ? 'opacity-50' : ''}`}
+            className={`w-8 h-8 cursor-pointer ${
+              !hasNextPage ? "opacity-50" : ""
+            }`}
             alt="Next Page"
           />
         </div>
