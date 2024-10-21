@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FOLDER } from '../../../types/folder';
 import { useDispatch, useSelector } from 'react-redux';
-import { getMainFolder, getSubFolder, getSubFolders } from '../../../redux/Media/MediaSlice';
+import { getFiles, getMainFolder, getSubFolder, getSubFolders } from '../../../redux/Media/MediaSlice';
 import axios from 'axios';
 import Breadcrumb from './Breadcrumb'; // Import your breadcrumb component
 
@@ -87,8 +87,189 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
         fetchSubFolders(clickedFolder.id);
     };
 
+    const [filterBody, setFilterBody] = useState({});
+
+    const filterData = async () => {
+      try {
+        const result = await axios.post<{ data: any[] }>(
+          `http://79.134.138.252:7111/jsonls/filter`,
+          {
+            ...filterBody,
+            path: breadcrumbPath.map((item) => item.name).join("/"),
+          }
+        );
+        console.log("API Response:", result.data); // Log the entire response
+        setFilterBody((prevBody) => ({
+          ...prevBody,
+          extension: undefined,
+        }));
+        if (result.data) {
+          dispatch(getFiles(result.data));
+        } else {
+          console.warn("No data found in API response");
+        }
+      } catch (error) {
+        console.error("Error fetching folders:", error);
+      }
+    };
+
     return (
         <div>
+                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            File/Folder Name
+          </label>
+          <input
+            onChange={(event) => {
+              const name = event.target.value;
+              setFilterBody((prevBody) => ({
+                ...prevBody,
+                name,
+              }));
+            }}
+            type="text"
+            id="fileFolderName"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+
+        {/* <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Path Contains
+          </label>
+          <input
+            type="text"
+            id="path"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div> */}
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            File Type
+          </label>
+          <select
+            onChange={(event) => {
+              const extension = event.target.value;
+              setFilterBody((prevBody) => ({
+                ...prevBody,
+                extension,
+              }));
+            }}
+            id="fileType"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          >
+            <option value="">Select file type</option>
+            <option value=".txt">.txt</option>
+            <option value=".pdf">.pdf</option>
+            <option value=".docx">.docx</option>
+            <option value=".jpg">.jpg</option>
+            <option value=".jsonl">.jsonl</option>
+          </select>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Min Size (bytes)
+            </label>
+            <input
+              onChange={(event) => {
+                const min_size = event.target.value;
+                setFilterBody((prevBody) => ({
+                  ...prevBody,
+                  min_size: +min_size,
+                }));
+              }}
+              type="number"
+              id="minSize"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Max Size (bytes)
+            </label>
+            <input
+              onChange={(event) => {
+                const max_size = event.target.value;
+                setFilterBody((prevBody) => ({
+                  ...prevBody,
+                  max_size: +max_size,
+                }));
+              }}
+              type="number"
+              id="maxSize"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Max Files Number
+          </label>
+          <input
+            onChange={(event) => {
+              const max_files_number = event.target.value;
+              setFilterBody((prevBody) => ({
+                ...prevBody,
+                max_files_number: +max_files_number,
+              }));
+            }}
+            type="number"
+            id="maxFilesNumber"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Min Folders Number
+            </label>
+            <input
+              onChange={(event) => {
+                const min_folders_number = event.target.value;
+                setFilterBody((prevBody) => ({
+                  ...prevBody,
+                  min_folders_number: +min_folders_number,
+                }));
+              }}
+              type="number"
+              id="minFoldersNumber"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Max Folders Number
+            </label>
+            <input
+              onChange={(event) => {
+                const max_folders_number = event.target.value;
+                setFilterBody((prevBody) => ({
+                  ...prevBody,
+                  max_folders_number: +max_folders_number,
+                }));
+              }}
+              type="number"
+              id="maxFoldersNumber"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+        </div>
+      </div>
+      <div className="mt-6">
+        <button
+          onClick={() => {
+            filterData();
+          }}
+          type="submit"
+          className="w-50 mb-10 px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          Apply Filter
+        </button>
+      </div>
             <Breadcrumb path={breadcrumbPath} onBreadcrumbClick={handleBreadcrumbClick} />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
                 {subfolders

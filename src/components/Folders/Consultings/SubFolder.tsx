@@ -21,91 +21,92 @@ interface RootState {
 }
 
 const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
-  // Redux
-  const { subfolders } = useSelector((state: RootState) => ({
-    subfolders: state.Consultings.subfolders,
-  }));
+      // Redux 
+      const { subfolders } = useSelector((state: RootState) => ({
+        subfolders: state.Consultings.subfolders,
+    }));
 
-  console.log("mainFolderId", mainFolderId);
+    console.log("mainFolderId consulting", mainFolderId);
 
-  // useState for Breadcrumb "path" plus Selection icon
-  const [selectedSubfolder, setSelectedSubfolder] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
-  const [breadcrumbPath, setBreadcrumbPath] = useState<
-    { id: string; name: string }[]
-  >([]);
-  const dispatch = useDispatch();
+    // useState for Breadcrumb "path" plus Selection icon
+    const [selectedSubfolder, setSelectedSubfolder] = useState<{ id: string; name: string } | null>(null);
+    const [breadcrumbPath, setBreadcrumbPath] = useState<{ id: string; name: string }[]>([]); 
+    const dispatch = useDispatch();
 
-  // ------ Fetch SubFolders ------
-  const fetchSubFolders = async (folderId: string) => {
-    try {
-      const result = await axios.post<{ data: FOLDER[] }>(
-        `http://79.134.138.252:7111/Consultings/filter`,
-        {
-          parent_id: folderId,
+    // ------ Fetch SubFolders ------ 
+    const fetchSubFolders = async (folderId: string) => {
+        try {
+            const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/consultings/filter`, {
+                parent_id: folderId,
+            });
+            console.log("result sub folders", result.data);
+
+            if (result.data) {
+                dispatch(getSubFolders(result.data));
+            } else {
+                dispatch(getSubFolders([]));
+            }
+        } catch (error) {
+            console.error("Error fetching folders:", error);
         }
-      );
-      console.log("result sub folder", result.data);
+    };
 
-      if (result.data) {
-        dispatch(getSubFolders(result.data));
-      } else {
-        dispatch(getSubFolders([]));
-      }
-    } catch (error) {
-      console.error("Error fetching folders:", error);
-    }
-  };
+    // ------ Fetch on initial load and whenever selectedConsultingsFolder changes ------
+    useEffect(() => {
+        const savedFolder = localStorage.getItem('selectedConsultingsFolder');
+        if (savedFolder) {
+            const folderDetails = JSON.parse(savedFolder);
+            setBreadcrumbPath([{ id: folderDetails.id, name: folderDetails.name }]);
+            fetchSubFolders(mainFolderId); 
+        }
+    }, [mainFolderId, dispatch]);
 
-  // ------ Fetch on initial load and whenever selectedConsultingsFolder changes ------
-  useEffect(() => {
-    const savedFolder = localStorage.getItem("selectedConsultingsFolder");
-    if (savedFolder) {
-      const folderDetails = JSON.parse(savedFolder);
-      setBreadcrumbPath([{ id: folderDetails.id, name: folderDetails.name }]);
-      fetchSubFolders(folderDetails.id); // Fetch based on the saved folder ID
-    }
-  }, [dispatch]);
+    // ------ Fetch when localStorage.selectedConsultingsFolder changes ------
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const savedFolder = localStorage.getItem('selectedConsultingsFolder');
+            if (savedFolder) {
+                const folderDetails = JSON.parse(savedFolder);
+                setBreadcrumbPath([{ id: folderDetails.id, name: folderDetails.name }]);
+                fetchSubFolders(folderDetails.id); // Fetch based on the updated selected folder
+            }
+        };
 
-  // Once the subfolder is clicked
-  const handleFolderClick = (folder: FOLDER) => {
-    const subfolderDetails = { id: folder._id, name: folder.name };
-    setSelectedSubfolder(subfolderDetails);
-    setBreadcrumbPath((prev) => [...prev, subfolderDetails]);
-    dispatch(getSubFolder(subfolderDetails));
+        window.addEventListener('storage', handleStorageChange);
 
-    localStorage.setItem(
-      "selectedConsultingsSubFolder",
-      JSON.stringify(subfolderDetails)
-    );
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
 
-    fetchSubFolders(folder._id);
-  };
+    // Once the subfolder is clicked
+    const handleFolderClick = (folder: FOLDER) => {
+        const subfolderDetails = { id: folder._id, name: folder.name };
+        setSelectedSubfolder(subfolderDetails);
+        setBreadcrumbPath(prev => [...prev, subfolderDetails]); 
+        dispatch(getSubFolder(subfolderDetails));
 
-  // Handle breadcrumb click to navigate to a previous folder and make it active
-  const handleBreadcrumbClick = (clickedFolder: {
-    id: string;
-    name: string;
-  }) => {
-    setSelectedSubfolder(clickedFolder);
+        localStorage.setItem('selectedConsultingsSubFolder', JSON.stringify(subfolderDetails));
 
-    const updatedPath = breadcrumbPath.slice(
-      0,
-      breadcrumbPath.findIndex((f) => f.id === clickedFolder.id) + 1
-    );
-    setBreadcrumbPath(updatedPath);
+        fetchSubFolders(folder._id);
+    };
 
-    fetchSubFolders(clickedFolder.id);
-  };
+    // Handle breadcrumb click to navigate to a previous folder and make it active
+    const handleBreadcrumbClick = (clickedFolder: { id: string; name: string }) => {
+        setSelectedSubfolder(clickedFolder); 
+
+        const updatedPath = breadcrumbPath.slice(0, breadcrumbPath.findIndex(f => f.id === clickedFolder.id) + 1);
+        setBreadcrumbPath(updatedPath);
+
+        fetchSubFolders(clickedFolder.id);
+    };
 
   const [filterBody, setFilterBody] = useState({});
 
   const filterData = async () => {
     try {
       const result = await axios.post<{ data: any[] }>(
-        `http://79.134.138.252:7111/Consultings/filter`,
+        `http://79.134.138.252:7111/consultings/filter`,
         {
           ...filterBody,
           path: breadcrumbPath.map((item) => item.name).join("/"),
