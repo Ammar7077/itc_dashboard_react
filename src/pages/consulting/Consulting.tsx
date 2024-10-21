@@ -45,6 +45,8 @@ const Consultings: React.FC = () => {
         `http://79.134.138.252:7111/consultings/filter`,
         {
           parent_id: parentId,
+          limit:100
+
         }
       );
 

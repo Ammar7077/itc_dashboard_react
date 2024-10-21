@@ -38,6 +38,9 @@ const Ai: React.FC = () => {
   console.log(localStorage.getItem("selectedAIFolder"));
   console.log(mainFolderName);
 
+  console.log(parentId);
+  
+
   //--------------get Folders ----
   const fetchFolders = async () => {
     try {
@@ -45,6 +48,7 @@ const Ai: React.FC = () => {
         `http://79.134.138.252:7111/ais/filter`,
         {
           parent_id: parentId,
+          limit:100
         }
       );
 

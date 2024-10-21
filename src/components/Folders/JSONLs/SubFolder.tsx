@@ -46,6 +46,8 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
         `http://79.134.138.252:7111/jsonls/filter`,
         {
           parent_id: folderId,
+          limit:100
+
         }
       );
       console.log("result sub folder", result.data);

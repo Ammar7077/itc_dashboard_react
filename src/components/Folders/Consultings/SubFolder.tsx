@@ -39,6 +39,8 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     try {
       const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/consultings/filter`, {
         parent_id: folderId,
+        limit:100
+
       });
       console.log("result sub folders", result.data);
 

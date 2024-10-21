@@ -46,6 +46,8 @@ const JSONLs: React.FC = () => {
         `http://79.134.138.252:7111/jsonls/filter`,
         {
           parent_id: parentId,
+          limit:100
+
         }
       );
       console.log("API Response:", result.data); // Log the entire response
