@@ -77,7 +77,7 @@ const Consultings: React.FC = () => {
   return (
     <>
       <Breadcrumb pageName="Consultings" />
-      <Folder folders={folders || []} title={"Consultings's Folders"} />
+     {/*  <Folder folders={folders || []} title={"Consultings's Folders"} /> */}
       <div className="grid gap-9 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 mb-10">
         {/* <InputText/> */}
 

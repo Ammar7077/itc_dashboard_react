@@ -40,7 +40,7 @@ const JSONLs: React.FC = () => {
   console.log(mainFolderName);
 
   //--------------get Folders ----
-  const fetchFolders = async () => {
+  /* const fetchFolders = async () => {
     try {
       const result = await axios.post<{ data: FOLDER[] }>(
         `http://79.134.138.252:7111/jsonls/filter`,
@@ -61,24 +61,17 @@ const JSONLs: React.FC = () => {
     }
   };
 
-  // ---------------get files ----
-  // may we add path side to Folder Name on the title to move on the second folders once click on it
-
-  /* const fetchFiles = async ()=>{
-        try{
-            const result = await axios.get<{data:FILE[]}>()
-        }
-    } */
+  
 
   useEffect(() => {
     fetchFolders();
-  }, [parentId]);
+  }, [parentId]); */
 
   return (
     <>
       <Breadcrumb pageName="JSONLs" />
-      <Folder folders={folders || []} title={"JSONLs's Folders"} />
-      <div className="grid gap-9 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 mb-10">
+{/*       <Folder folders={folders || []} title={"JSONLs's Folders"} />
+ */}      <div className="grid gap-9 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 mb-10">
         {/* <InputText/> */}
 
         {/* <!-- Checkbox and radio --> */}

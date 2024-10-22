@@ -160,7 +160,7 @@ console.log(fileInfo);
               </div>
 
               <div className="hidden xl:flex sm:hidden flex items-center justify-center p-2.5 sm:flex xl:p-5">
-                <p className="text-meta-3 ">{file.extension?.toUpperCase()}</p>
+                <p className="text-meta-3 ">{file.extension?.replace('.', '').toUpperCase()}</p>
               </div>
 
               {/* Actions Column */}
