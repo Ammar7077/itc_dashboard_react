@@ -35,14 +35,13 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
   const [breadcrumbPath, setBreadcrumbPath] = useState<{ id: string; name: string }[]>([]);
   const dispatch = useDispatch();
 
-  // ------ Fetch SubFolders ------ 
-  const fetchSubFolders = async (folderId: string) => {
+  // ------ Fetch Top-level Folders ------ 
+  const fetchTopLevelFolders = async () => {
     try {
       const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/ais/filter`, {
-        parent_id: folderId,
-        limit:100
+        parent_id: "null", // Fetch folders with parent_id as null
       });
-      console.log("result sub folders", result.data);
+      console.log("Top-level folders", result.data);
 
       if (result.data) {
         dispatch(getSubFolders(result.data));
@@ -50,37 +49,32 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
         dispatch(getSubFolders([]));
       }
     } catch (error) {
-      console.error("Error fetching folders:", error);
+      console.error("Error fetching top-level folders:", error);
     }
   };
 
-  // ------ Fetch on initial load and whenever selectedAIFolder changes ------
-  useEffect(() => {
-    const savedFolder = localStorage.getItem('selectedAIFolder');
-    if (savedFolder) {
-      const folderDetails = JSON.parse(savedFolder);
-      setBreadcrumbPath([{ id: folderDetails.id, name: folderDetails.name }]);
-      fetchSubFolders(mainFolderId);
-    }
-  }, [mainFolderId, dispatch]);
+  // ------ Fetch SubFolders ------ 
+  const fetchSubFolders = async (folderId: string) => {
+    try {
+      const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/ais/filter`, {
+        parent_id: folderId,
+      });
+      console.log("Subfolders", result.data);
 
-  // ------ Fetch when localStorage.selectedAIFolder changes ------
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const savedFolder = localStorage.getItem('selectedAIFolder');
-      if (savedFolder) {
-        const folderDetails = JSON.parse(savedFolder);
-        setBreadcrumbPath([{ id: folderDetails.id, name: folderDetails.name }]);
-        fetchSubFolders(folderDetails.id); // Fetch based on the updated selected folder
+      if (result.data) {
+        dispatch(getSubFolders(result.data));
+      } else {
+        dispatch(getSubFolders([]));
       }
-    };
+    } catch (error) {
+      console.error("Error fetching subfolders:", error);
+    }
+  };
 
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+  // ------ Fetch selectedAIFolder changes ------ 
+  useEffect(() => {
+    fetchTopLevelFolders(); 
+  }, [dispatch]);
 
   // Once the subfolder is clicked
   const handleFolderClick = (folder: FOLDER) => {
@@ -91,8 +85,9 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
 
     localStorage.setItem('selectedAISubFolder', JSON.stringify(subfolderDetails));
 
-    fetchSubFolders(folder._id);
+    fetchSubFolders(folder._id); 
   };
+  
 
   // Handle breadcrumb click to navigate to a previous folder and make it active
   const handleBreadcrumbClick = (clickedFolder: { id: string; name: string }) => {
@@ -100,22 +95,20 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
 
     const updatedPath = breadcrumbPath.slice(0, breadcrumbPath.findIndex(f => f.id === clickedFolder.id) + 1);
     setBreadcrumbPath(updatedPath);
+    dispatch(getFiles([]))
 
-    fetchSubFolders(clickedFolder.id);
+    fetchSubFolders(clickedFolder.id); 
   };
 
   const [filterBody, setFilterBody] = useState({});
 
   const filterData = async () => {
     try {
-      const result = await axios.post<{ data: any[] }>(
-        `http://79.134.138.252:7111/ais/filter`,
-        {
-          ...filterBody,
-          path: breadcrumbPath.map((item) => item.name).join("/"),
-        }
-      );
-      console.log("API Response:", result.data); // Log the entire response
+      const result = await axios.post<{ data: any[] }>(`http://79.134.138.252:7111/ais/filter`, {
+        ...filterBody,
+        path: breadcrumbPath.map((item) => item.name).join("/"),
+      });
+      console.log("API Response:", result.data); 
       setFilterBody((prevBody) => ({
         ...prevBody,
         extension: undefined,
@@ -131,14 +124,12 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
   };
 
   console.log(subfolders);
-  
 
-  
   return (
     <div>
       <FilterComponent
-        onFilterChange={setFilterBody}  // Pass setFilterBody as a callback
-        onApplyFilter={filterData}      // Trigger filter when Apply button is clicked
+        onFilterChange={setFilterBody}  
+        onApplyFilter={filterData}      
       />
       <Breadcrumb
         path={breadcrumbPath}

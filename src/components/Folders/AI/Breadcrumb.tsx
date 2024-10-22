@@ -7,7 +7,7 @@ interface BreadcrumbProps {
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ path, onBreadcrumbClick }) => {
     return (
-        <nav className="mb-4">
+        <nav className="mb-4 mt-10">
             {path.map((folder, index) => (
                 <span key={folder.id}>
                     <button
