@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 const JSONLsSlice = createSlice({
   name: "JSONLs",
   initialState: {
@@ -36,7 +37,10 @@ const JSONLsSlice = createSlice({
     },
     getFileInfo:(state,action)=>{
       state.fileInfo= action.payload
-    }
+    },
+    clearFiles: (state) => {
+      state.files = []; 
+    },
   }
 
 });
@@ -48,5 +52,6 @@ export const {
     getSubFolder,
     getSubSubfolders,
     getFileInfo,
+    clearFiles
 } = JSONLsSlice.actions;
 export default JSONLsSlice.reducer;

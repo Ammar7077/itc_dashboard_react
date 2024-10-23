@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FOLDER, MAIN } from "../../../types/folder";
 import axios from "axios";
-import { getFileInfo, getFiles } from "../../../redux/JSONLs/JSONLsSlice";
+import { clearFiles, getFileInfo, getFiles } from "../../../redux/JSONLs/JSONLsSlice";
 import { FILE } from "../../../types/file";
 
 // File icons
@@ -19,19 +19,20 @@ import view from "../../../images/FilesIcon/research.png";
 import download from "../../../images/FilesIcon/download.png";
 import nextPage from "../../../images/pageIcon/next-page.png";
 import prePage from "../../../images/pageIcon/left-arrow.png";
+import { useLocation } from "react-router-dom";
 
 interface FolderProps {
   JSONLs: {
     fileInfo: FILE;
     subFolder: MAIN;
-    files: FILE[];
+    files: FILE[] | null;
   };
 }
 
 const TableOne: React.FC<FolderProps> = () => {
   const { subFolder, files = [] } = useSelector((state: FolderProps) => ({
     subFolder: state.JSONLs.subFolder,
-    files: state.JSONLs.files || [], // Set default to empty array
+    files: state.JSONLs.files || [], 
   }));
 
   const subFolderId = subFolder?.id;
@@ -42,31 +43,27 @@ const TableOne: React.FC<FolderProps> = () => {
   const filesPerPage = 5; // Number of files per page
   const [loading, setLoading] = useState(false); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
-  const [hasNextPage, setHasNextPage] = useState(true); // Track if there's a next page
+  const [hasNextPage, setHasNextPage] = useState(false); // Track if there's a next page
 
+  // Fetch Files with pagination
   // Fetch Files with pagination
   const fetchFiles = async (page: number) => {
     setLoading(true);
     setError(null);
-
+  
     try {
       const result = await axios.post<{
-        length: number; data: FILE[] 
-}>(
-        `http://79.134.138.252:7111/jsonls/filter`,
-        {
-          parent_id: subFolderId,
-          limit: filesPerPage,
-          page: page,
-        }
-      );
-
-      console.log("newpagedata", result.data);
-
-      // if (result.data && result.data.length > 0) {
+        length: number;
+        data: FILE[];
+      }>(`http://79.134.138.252:7111/jsonls/filter`, {
+        parent_id: subFolderId,
+        limit: filesPerPage,
+        page: page,
+      });
+  
       if (result.data && result.data.length > 0) {
         dispatch(getFiles(result.data)); // Update Redux state with the new files
-        setHasNextPage(true); // If data is present, next page exists
+        setHasNextPage(result.data.length === filesPerPage); // True if the returned data fills the page
       } else {
         setHasNextPage(false); // No data means no next page
       }
@@ -77,6 +74,14 @@ const TableOne: React.FC<FolderProps> = () => {
       setLoading(false);
     }
   };
+  
+  const location = useLocation(); 
+
+    // Clear files when the URL changes or component is unmounted
+  useEffect(() => {
+      dispatch(clearFiles()); 
+    }, [location, dispatch]);  
+
 
   // Trigger file fetching when subFolder changes or currentPage changes
   useEffect(() => {
@@ -87,10 +92,12 @@ const TableOne: React.FC<FolderProps> = () => {
 
   // Handle page changes
   const handlePageChange = (newPage: number) => {
+    // Only allow changing to pages if there's a previous or next page
     if (newPage >= 1 && (newPage < currentPage || hasNextPage)) {
       setCurrentPage(newPage);
     }
   };
+  
 
   // Handle file view and download
   const handleViewFile = (file: FILE) => {
@@ -237,24 +244,21 @@ const TableOne: React.FC<FolderProps> = () => {
 
         {/* Pagination Controls */}
         <div className="flex justify-center mt-4">
-          <img
-            src={prePage}
-            onClick={() => handlePageChange(currentPage - 1)}
-            className={`w-8 h-8 cursor-pointer ${
-              currentPage === 1 ? "opacity-50" : ""
-            }`}
-            alt="Previous Page"
-          />
-          <p className="mx-2 text-lg">Page {currentPage}</p>
-          <img
-            src={nextPage}
-            onClick={() => handlePageChange(currentPage + 1)}
-            className={`w-8 h-8 cursor-pointer ${
-              !hasNextPage ? "opacity-50" : ""
-            }`}
-            alt="Next Page"
-          />
-        </div>
+        <img
+           src={prePage}
+           onClick={() => handlePageChange(currentPage - 1)}
+           className={`w-8 h-8 cursor-pointer ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+           alt="Previous Page"
+         />
+       <p className="mx-2 text-lg">Page {currentPage}</p>
+       <img
+           src={nextPage}
+           onClick={() => hasNextPage && handlePageChange(currentPage + 1)}  // Only call handlePageChange if there is a next page
+           className={`w-8 h-8 cursor-pointer ${!hasNextPage ? "opacity-50 cursor-not-allowed" : ""}`}
+           alt="Next Page"
+        />
+      </div>
+
       </div>
     </div>
   );

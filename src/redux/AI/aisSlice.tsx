@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+
+
 const aisSlice = createSlice({
   name: "AI",
   initialState: {
@@ -43,7 +45,10 @@ const aisSlice = createSlice({
     },
     getFileInfo:(state,action)=>{
       state.fileInfo= action.payload
-    }
+    },
+    clearFiles: (state) => {
+      state.files = []; 
+    },
   }
 
 });
@@ -56,6 +61,7 @@ export const {
     getSubSubfolders,
     getFileInfo,
     getfolderId,
-    getFolderIdSub
+    getFolderIdSub,
+    clearFiles
 } = aisSlice.actions;
 export default aisSlice.reducer;

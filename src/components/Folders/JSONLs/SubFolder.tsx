@@ -84,6 +84,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
 
   // Once the subfolder is clicked
   const handleFolderClick = (folder: FOLDER) => {
+
     const subfolderDetails = { id: folder._id, name: folder.name };
     setSelectedSubfolder(subfolderDetails);
     setBreadcrumbPath(prev => [...prev, subfolderDetails]);
@@ -99,6 +100,8 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
 
     // Handle breadcrumb click
     const handleBreadcrumbClick = (clickedFolder: { id: string; name: string }) => {
+        dispatch(getFiles([]))
+
         if (clickedFolder.id === "null") {
           // When clicking on the main "AI" breadcrumb
           setSelectedSubfolder(null); 
@@ -115,6 +118,8 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     
       // Handle back navigation
       const handleBackClick = () => {
+        dispatch(getFiles([]))
+
         if (breadcrumbPath.length > 1) { // Ensure there is a previous folder to navigate back to
           const newPath = breadcrumbPath.slice(0, -1); // Remove the last folder from breadcrumb path
           const previousFolder = newPath[newPath.length - 1]; // Get the previous folder
@@ -160,7 +165,7 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
         path={breadcrumbPath}
         onBreadcrumbClick={handleBreadcrumbClick}
         onBackClick={handleBackClick}     
-        
+
       />
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
         {subfolders

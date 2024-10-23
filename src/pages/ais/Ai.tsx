@@ -3,10 +3,11 @@ import TableOne from "../../components/Tables/AI/TableFiles";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { getFolders } from "../../redux/AI/aisSlice";
+import { clearFiles, getFiles, getFolders } from "../../redux/AI/aisSlice";
 import { FOLDER, MAIN } from "../../types/folder";
 import SubFolder from "../../components/Folders/AI/SubFolder";
 import { FILE } from "../../types/file";
+import { useLocation } from "react-router-dom";
 
 interface RootState {
   AI: {
@@ -29,6 +30,14 @@ const Ai: React.FC = () => {
       files: state.AI.files,
     })
   );
+
+  const location = useLocation()
+
+  // Clear files when the URL changes or component is unmounted
+  useEffect(() => {
+    dispatch(clearFiles()); 
+  }, [location]);  
+
 
   const mainFolderName = mainFolder ? mainFolder.name : "loading...";
   const mainFolderId = mainFolder ? mainFolder.id : "loading ...";
@@ -63,6 +72,7 @@ const Ai: React.FC = () => {
   useEffect(() => {
     fetchFolders();
   }, [parentId]); */
+      
 
   return (
     <>

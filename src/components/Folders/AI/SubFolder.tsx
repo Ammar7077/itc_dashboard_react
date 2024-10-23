@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FOLDER } from "../../../types/folder";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -27,6 +27,8 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
   const { subfolders } = useSelector((state: RootState) => ({
     subfolders: state.AI.subfolders,
   }));
+
+  const location = useLocation()
 
   console.log("mainFolderId consulting", mainFolderId);
 
@@ -116,6 +118,8 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
     id: string;
     name: string;
   }) => {
+    dispatch(getFiles([]))
+
     if (clickedFolder.id === "null") {
       // When clicking on the main "AI" breadcrumb
       setSelectedSubfolder(null);
@@ -135,16 +139,20 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
 
   // Handle back navigation
   const handleBackClick = () => {
+    dispatch(getFiles([]))
+
     if (breadcrumbPath.length > 1) {
       // Ensure there is a previous folder to navigate back to
       const newPath = breadcrumbPath.slice(0, -1); // Remove the last folder from breadcrumb path
       const previousFolder = newPath[newPath.length - 1]; // Get the previous folder
-
       setSelectedSubfolder(previousFolder); // Set the previous folder as selected
       setBreadcrumbPath(newPath); // Update the breadcrumb path
       fetchSubFolders(previousFolder.id); // Fetch subfolders for the previous folder
     }
   };
+
+
+
   const [filterBody, setFilterBody] = useState({});
 
   const filterData = async () => {

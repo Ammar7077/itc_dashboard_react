@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 const ConsultingsSlice = createSlice({
   name: "Consultings",
   initialState: {
@@ -36,7 +37,10 @@ const ConsultingsSlice = createSlice({
     },
     getFileInfo:(state,action)=>{
       state.fileInfo= action.payload
-    }
+    },
+    clearFiles: (state) => {
+      state.files = []; 
+    },
   }
 
 });
@@ -48,5 +52,6 @@ export const {
     getSubFolder,
     getSubSubfolders,
     getFileInfo,
+    clearFiles
 } = ConsultingsSlice.actions;
 export default ConsultingsSlice.reducer;

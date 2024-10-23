@@ -2,108 +2,157 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FOLDER, MAIN } from "../../../types/folder";
 import axios from "axios";
-import { getFileInfo, getFiles } from "../../../redux/Media/MediaSlice";
+import { clearFiles, getFileInfo, getFiles } from "../../../redux/Media/MediaSlice";
 import { FILE } from "../../../types/file";
 
 // File icons
-import pdfIcon from '../../../images/FilesIcon/pdf.png';
-import docIcon from '../../../images/FilesIcon/doc.png';
-import excelIcon from '../../../images/FilesIcon/excel.png';
-import jpgIcon from '../../../images/FilesIcon/jpg.png';
-import pngIcon from '../../../images/FilesIcon/png.png';
-import jsonlIcon from '../../../images/FilesIcon/json.png';
-import txtIcon from '../../../images/FilesIcon/txt.png';
-import xlsxIcon from '../../../images/FilesIcon/xlsx.png';
-import docxIcon from '../../../images/FilesIcon/docx.png';
-import view from '../../../images/FilesIcon/research.png';
-import download from '../../../images/FilesIcon/download.png';
-import nextPage from '../../../images/pageIcon/next-page.png'
-import prePage from '../../../images/pageIcon/left-arrow.png'
+import pdfIcon from "../../../images/FilesIcon/pdf.png";
+import docIcon from "../../../images/FilesIcon/doc.png";
+import excelIcon from "../../../images/FilesIcon/excel.png";
+import jpgIcon from "../../../images/FilesIcon/jpg.png";
+import pngIcon from "../../../images/FilesIcon/png.png";
+import jsonlIcon from "../../../images/FilesIcon/json.png";
+import txtIcon from "../../../images/FilesIcon/txt.png";
+import xlsxIcon from "../../../images/FilesIcon/xlsx.png";
+import docxIcon from "../../../images/FilesIcon/docx.png";
+import view from "../../../images/FilesIcon/research.png";
+import download from "../../../images/FilesIcon/download.png";
+import nextPage from "../../../images/pageIcon/next-page.png";
+import prePage from "../../../images/pageIcon/left-arrow.png";
+import { useLocation } from "react-router-dom";
 
 interface FolderProps {
   Media: {
+    fileInfo: FILE;
     subFolder: MAIN;
-    files: FILE[];
-    fileInfo:FILE
+    files: FILE[] | null;
   };
 }
 
 const TableOne: React.FC<FolderProps> = () => {
-
-  const { subFolder, files,fileInfo } = useSelector((state: FolderProps) => ({
-    fileInfo:state.Media.fileInfo,
+  const { subFolder, files = [] } = useSelector((state: FolderProps) => ({
     subFolder: state.Media.subFolder,
-    files: state.Media.files
+    files: state.Media.files || [], 
   }));
-  
 
   const subFolderId = subFolder?.id;
   const dispatch = useDispatch();
 
-  // Fetch Files
-  const fetchFiles = async () => {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const filesPerPage = 5; // Number of files per page
+  const [loading, setLoading] = useState(false); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
+  const [hasNextPage, setHasNextPage] = useState(false); // Track if there's a next page
+
+  // Fetch Files with pagination
+  const fetchFiles = async (page: number) => {
+    setLoading(true);
+    setError(null);
+  
     try {
-      const result = await axios.post<{ data: FOLDER[] }>(`http://79.134.138.252:7111/media/filter`, {
+      const result = await axios.post<{
+        length: number;
+        data: FILE[];
+      }>(`http://79.134.138.252:7111/media/filter`, {
         parent_id: subFolderId,
+        limit: filesPerPage,
+        page: page,
       });
-      if (result.data) {
-        dispatch(getFiles(result.data));
+  
+      if (result.data && result.data.length > 0) {
+        dispatch(getFiles(result.data)); // Update Redux state with the new files
+        setHasNextPage(result.data.length === filesPerPage); // True if the returned data fills the page
+      } else {
+        setHasNextPage(false); // No data means no next page
       }
     } catch (error) {
+      setError("Error fetching files");
       console.error("Error fetching files:", error);
+    } finally {
+      setLoading(false);
     }
   };
-
-  // view file
-
-  const handleViewFile =(file:FILE)=>{
-    dispatch(getFileInfo(file))
-  }
-
-   // ------ download file
-
   
-console.log(fileInfo);
+  const location = useLocation(); 
 
-
+    // Clear files when the URL changes or component is unmounted
   useEffect(() => {
-    if (subFolder) {
-      fetchFiles();
+      dispatch(clearFiles()); 
+    }, [location, dispatch]);  
+
+
+
+  // Trigger file fetching when subFolder changes or currentPage changes
+  useEffect(() => {
+    if (subFolderId) {
+      fetchFiles(currentPage);
     }
+  }, [subFolderId, currentPage]);
 
-  }, [dispatch, subFolderId]);
+  // Handle page changes
+  const handlePageChange = (newPage: number) => {
+    // Only allow changing to pages if there's a previous or next page
+    if (newPage >= 1 && (newPage < currentPage || hasNextPage)) {
+      setCurrentPage(newPage);
+    }
+  };
+  
+  
 
-  // Get file icon based on the extension
-  const getFileIcon = (fileName: string) => {
-    const extension = fileName.split('.').pop()?.toLowerCase();
-    switch (extension) {
-      case 'pdf': return pdfIcon;
-      case 'doc': return docIcon;
-      case 'docx': return docxIcon;
-      case 'txt': return txtIcon;
-      case 'jsonl': return jsonlIcon;
-      case 'jpg': return jpgIcon;
-      case 'xls': return excelIcon;
-      case 'png': return pngIcon;
-      case 'xlsx': return xlsxIcon;
-      default: return pdfIcon;
+  // Handle file view and download
+  const handleViewFile = (file: FILE) => {
+    dispatch(getFileInfo(file));
+  };
+
+  const handleDownloadFile = async (file: FILE) => {
+    dispatch(getFileInfo(file));
+
+    try {
+      const result = await axios.get(
+        `http://79.134.138.252:7111/ftp/download?filePath=${file.path?.pathString}`,
+        {
+          responseType: "blob",
+        }
+      );
+
+      const blob = new Blob([result.data], { type: result.data.type });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading file:", error);
     }
   };
 
-  const filteredFiles = files.filter(file => file.document_type !== "folder");
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const filesPerPage = 5;
-
-  // Pagination logic
-  const indexOfLastFile = currentPage * filesPerPage;
-  const indexOfFirstFile = indexOfLastFile - filesPerPage;
-  const currentFiles = filteredFiles.slice(indexOfFirstFile, indexOfLastFile);
-  const totalPages = Math.ceil(filteredFiles.length / filesPerPage);
-
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+  // Get file icon based on extension
+  const getFileIcon = (fileName: string) => {
+    const extension = fileName.split(".").pop()?.toLowerCase();
+    switch (extension) {
+      case "pdf":
+        return pdfIcon;
+      case "doc":
+        return docIcon;
+      case "docx":
+        return docxIcon;
+      case "txt":
+        return txtIcon;
+      case "jsonl":
+        return jsonlIcon;
+      case "jpg":
+        return jpgIcon;
+      case "xls":
+        return excelIcon;
+      case "png":
+        return pngIcon;
+      case "xlsx":
+        return xlsxIcon;
+      default:
+        return pdfIcon;
     }
   };
 
@@ -115,34 +164,47 @@ console.log(fileInfo);
     return `${(bytes / (1024 ** i)).toFixed(2)} ${sizes[i]}`;
   };
 
+  // Filter out folders from files
+  const filteredFiles = files.filter((file) => file.document_type !== "folder");
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 bg-slate-50">
       
 
+      {loading && <p>Loading files...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+
       <div className="flex flex-col">
         <div className="grid grid-cols-3 bg-slate-200 rounded-lg dark:bg-meta-4 m:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Name</h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              Name
+            </h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Size</h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              Size
+            </h5>
           </div>
           <div className="hidden p-2.5 text-center items-center justify-center xl:flex sm:hidden xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Extension</h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              Extension
+            </h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Actions</h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">
+              Actions
+            </h5>
           </div>
-          
         </div>
 
-        {currentFiles.map((file, key) => {
+        {filteredFiles.map((file, key) => {
           const fileIcon = getFileIcon(file.name); // Get the icon for the current file
-          
+
           return (
             <div
               className={`grid grid-cols-3 m:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 ${
-                key === currentFiles.length - 1
+                key === filteredFiles.length - 1
                   ? ""
                   : "border-b border-stroke dark:border-strokedark"
               }`}
@@ -163,34 +225,43 @@ console.log(fileInfo);
                 <p className="text-meta-3 ">{file.extension?.replace('.', '').toUpperCase()}</p>
               </div>
 
-              {/* Actions Column */}
               <div className="flex items-center justify-center gap-2 p-2.5 xl:p-5">
-                  <img src={view} alt="view" className="w-10 h-10 cursor-pointer"
-                  onClick={()=>handleViewFile(file)}
-                   />
-               
-                  <img src={download} alt="download" className="w-10 h-10 cursor-pointer"
-                   onClick={()=>handleViewFile(file)}
-                   />
+                <img
+                  src={view}
+                  alt="view"
+                  className="w-10 h-10 cursor-pointer"
+                  onClick={() => handleViewFile(file)}
+                />
+                <img
+                  src={download}
+                  alt="download"
+                  className="w-10 h-10 cursor-pointer"
+                  onClick={() => handleDownloadFile(file)}
+                />
               </div>
             </div>
           );
-        })}
+        })
+        
+        }
 
         {/* Pagination Controls */}
-        <div className="flex justify-center mt-4">
-          <img src={prePage}
-          onClick={() => handlePageChange(currentPage - 1)}
-          className="h-10"/>
-          <span className="mx-4 text-black font-bold dark:text-white">
-            Page {currentPage} of {totalPages}
-          </span>
-          
-          <img
-           onClick={() => handlePageChange(currentPage + 1)}
-           src={nextPage} className="h-10"/>
+      <div className="flex justify-center mt-4">
+        <img
+           src={prePage}
+           onClick={() => handlePageChange(currentPage - 1)}
+           className={`w-8 h-8 cursor-pointer ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+           alt="Previous Page"
+         />
+       <p className="mx-2 text-lg">Page {currentPage}</p>
+       <img
+           src={nextPage}
+           onClick={() => hasNextPage && handlePageChange(currentPage + 1)}  // Only call handlePageChange if there is a next page
+           className={`w-8 h-8 cursor-pointer ${!hasNextPage ? "opacity-50 cursor-not-allowed" : ""}`}
+           alt="Next Page"
+        />
+      </div>
 
-        </div>
       </div>
     </div>
   );
