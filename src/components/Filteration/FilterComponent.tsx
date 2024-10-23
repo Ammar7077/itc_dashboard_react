@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SizeTypeEnum } from "../../enums/SizeType.enum";
 
 interface FilterProps {
@@ -12,8 +12,14 @@ const FilterComponent: React.FC<FilterProps> = ({
 }) => {
   const [filterBody, setFilterBody] = useState<Record<string, any>>({});
   const [isDropDownSizeClicked, setIsDropDownSizeClicked] = useState(false);
-  const [selectedSizeTypeIndex, setSelectedSizeTypeIndex] = useState(0);
-  const sizeTypeList = [SizeTypeEnum.BYTES, SizeTypeEnum.MB, SizeTypeEnum.GB];
+  const [selectedSizeTypeIndex, setSelectedSizeTypeIndex] = useState(2);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const sizeTypeList = [
+    SizeTypeEnum.BYTES,
+    SizeTypeEnum.KB,
+    SizeTypeEnum.MB,
+    SizeTypeEnum.GB,
+  ];
 
   const handleInputChange = (key: string, value: any) => {
     const updatedFilterBody = {
@@ -24,6 +30,21 @@ const FilterComponent: React.FC<FilterProps> = ({
     setFilterBody(updatedFilterBody);
     onFilterChange(updatedFilterBody);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropDownSizeClicked(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -76,7 +97,7 @@ const FilterComponent: React.FC<FilterProps> = ({
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
           />
         </div>
-        <div className="relative inline-block text-left pt-6">
+        <div className="relative inline-block text-left pt-6" ref={dropdownRef}>
           <button
             type="button"
             className="inline-flex w-20 h-10 justify-center gap-x-1 rounded-md bg-white py-2 text-sm font-semibold text-gray-900 ring-1 ring-black hover:bg-gray"
@@ -90,27 +111,24 @@ const FilterComponent: React.FC<FilterProps> = ({
               aria-hidden="true"
               data-slot="icon"
             >
-              <path
-                fill-rule="evenodd"
-                d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
-                clip-rule="evenodd"
-              />
+              <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" />
             </svg>
           </button>
           {isDropDownSizeClicked ? (
             <div className="absolute z-10 mt-2 w-20 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
               {sizeTypeList.map((sizeType, index) => (
-                <a
+                <button
+                  key={sizeType}
                   onClick={() => {
                     setSelectedSizeTypeIndex(index);
                     setIsDropDownSizeClicked(!isDropDownSizeClicked);
                   }}
-                  className={`block px-4 py-2 text-sm bg-${
+                  className={`w-full block px-4 py-2 text-sm bg-${
                     selectedSizeTypeIndex === index ? "gray" : ""
                   } hover:bg-gray`}
                 >
                   {sizeType}
-                </a>
+                </button>
               ))}
             </div>
           ) : (
