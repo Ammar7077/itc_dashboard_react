@@ -9,6 +9,7 @@ import JSONLs from "./pages/JSONLs/JSONLs";
 import Media from "./pages/Media/Media";
 import Loader from "./components/common/Loader";
 import DefaultLayout from "./DefaultLayout";
+import Portal from "./pages/Portal/Portal";
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -83,6 +84,16 @@ function App() {
             <>
               <PageTitle title="Data of Media" />
               <Media />
+            </>
+          }
+        />
+
+        <Route
+          path="/portal/media"
+          element={
+            <>
+              <PageTitle title="Data of Media" />
+              <Portal />
             </>
           }
         />
