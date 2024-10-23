@@ -12,6 +12,10 @@ import Breadcrumb from "./Breadcrumb"; // Import your breadcrumb component
 import { StaticFolderSvg } from "../../Static/folder.svg";
 import FilterComponent from "../../Filteration/FilterComponent";
 
+// React
+import { motion } from "framer-motion"
+
+
 interface FolderProps {
   mainFolderId: string;
 }
@@ -181,46 +185,49 @@ const SubFolder: React.FC<FolderProps> = ({ mainFolderId }) => {
 
   return (
     <div>
-      <FilterComponent
-        onFilterChange={setFilterBody}
-        onApplyFilter={filterData}
-      />
-      <Breadcrumb
-        path={breadcrumbPath}
-        onBreadcrumbClick={handleBreadcrumbClick}
-        onBackClick={handleBackClick}
-      />
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-        {subfolders
-          .filter((folder) => folder.document_type === "folder")
-          .map((folder) => (
-            <Link
-              key={folder._id}
-              to="#"
-              onClick={() => handleFolderClick(folder)}
-              aria-label={`Open folder ${folder.name}`}
-              className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
-                selectedSubfolder?.id === folder._id
-                  ? "bg-slate-900 text-white border-transparent"
-                  : "border-amber text-amber hover:bg-neutral-300 hover:border-white hover:text-black"
-              }`}
-            >
-              <div className="flex flex-col">
-                {StaticFolderSvg}
-                <span className="font-medium text-sm">{folder.name}</span>
-                <div className="flex flex-2 gap-2">
-                  <span className="mt-1 text-amber-500 dark:text-white">
-                    {folder.total_files} Files
-                  </span>
-                  <span className="mt-1 text-green-500 dark:text-white">
-                    {folder.total_folders} Folders
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-      </div>
-    </div>
+  <FilterComponent
+    onFilterChange={setFilterBody}
+    onApplyFilter={filterData}
+  />
+  <Breadcrumb
+    path={breadcrumbPath}
+    onBreadcrumbClick={handleBreadcrumbClick}
+    onBackClick={handleBackClick}
+  />
+  
+  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 animate-fadeIn">
+    {subfolders
+      .filter((folder) => folder.document_type === "folder")
+      .map((folder) => (
+        <Link
+          key={folder._id}
+          to="#"
+          onClick={() => handleFolderClick(folder)}
+          aria-label={`Open folder ${folder.name}`}
+          // Add transition, scale, and hover animation
+          className={`flex items-center justify-between p-4 rounded-lg border transition-all transform duration-300 ease-in-out ${
+            selectedSubfolder?.id === folder._id
+              ? "bg-slate-900 text-white border-transparent"
+              : "border-amber text-amber hover:scale-105 hover:bg-neutral-300 hover:border-white hover:text-black"
+          }`}
+        >
+          <div className="flex flex-col">
+            {StaticFolderSvg}
+            <span className="font-medium text-sm">{folder.name}</span>
+            <div className="flex flex-2 gap-2">
+              <span className="mt-1 text-amber-500 dark:text-white">
+                {folder.total_files.toLocaleString()} Files
+              </span>
+              <span className="mt-1 text-green-500 dark:text-white">
+                {folder.total_folders.toLocaleString()} Folders
+              </span>
+            </div>
+          </div>
+        </Link>
+      ))}
+  </div>
+</div>
+
   );
 };
 

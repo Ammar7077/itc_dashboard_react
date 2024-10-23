@@ -111,7 +111,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   <React.Fragment>
                     <NavLink
                       to="#"
-                      className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4  hover:text-blue-600 ${
+                      className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4  hover:text-blue-700 ${
                         pathname === "/" && "bg-meta-4 dark:bg-meta-4"
                       }`}
                       onClick={(e) => {
@@ -146,7 +146,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           fill=""
                         />
                       </svg>
-                      <span className="text-white hover:text-blue-600">
+                      <span className="text-white hover:text-blue-700">
                         Databank
                       </span>
                       <svg
@@ -184,14 +184,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 className={` group relative flex bg-graydark text-white items-center gap-2.5 rounded-sm px-4 py-2 font-medium ${
                                   (pathname === "/data/ai" ||
                                     pathname.includes("AI")) &&
-                                  "bg-white text-blue-600	 dark:bg-meta-4"
+                                  "bg-white text-blue-700	 dark:bg-meta-4"
                                 } duration-300 ease-in-out hover:bg-meta-4 hover:text-black`}
                                 onClick={handleClick}
                               >
                                 <svg
                                   height="800px"
                                   width="800px"
-                                  className="w-6 h-6 text-blue-500"
+                                  className="w-6 h-6 text-blue-700"
                                   viewBox="0 0 24 24"
                                   xmlns="http://www.w3.org/2000/svg"
                                 >
@@ -223,7 +223,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 className={` group relative bg-graydark text-white flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium duration-300 ease-in-out hover:bg-meta-4 hover:text-black ${
                                   (pathname === "/data/consultings" ||
                                     pathname.includes("consultings")) &&
-                                  "bg-white text-blue-600 dark:bg-meta-4"
+                                  "bg-white text-blue-700 dark:bg-meta-4"
                                 }`}
                                 onClick={handleClick}
                               >
@@ -337,9 +337,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               <NavLink
                                 to="data/media"
                                 className={` group relative bg-graydark text-white flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium duration-300 ease-in-out hover:bg-meta-4 hover:text-black ${
-                                  (pathname === "/data/media" ||
-                                    pathname.includes("media")) &&
-                                  "bg-white text-blue-600  dark:bg-meta-4"
+                                  (pathname === "/data/media") &&
+                                  "bg-white text-blue-700  dark:bg-meta-4"
                                 }`}
                                 onClick={handleClick}
                               >
@@ -374,7 +373,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 className={` group relative flex text-white items-center gap-2.5 rounded-sm px-4 py-2 font-medium duration-300 bg-graydark  ease-in-out hover:bg-meta-4 hover:text-black ${
                                   (pathname === "/data/JSONLs" ||
                                     pathname.includes("JSONLs")) &&
-                                  "bg-white text-blue-600 dark:bg-meta-4"
+                                  "bg-white text-blue-700 dark:bg-meta-4"
                                 }`}
                                 onClick={handleClick}
                               >
@@ -392,6 +391,38 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   />
                                 </svg>
                                 <span>JSONL</span>
+                              </NavLink>
+                            </React.Fragment>
+                          )}
+                        </SidebarLinkGroup>
+
+                        
+
+                        <SidebarLinkGroup activeCondition={pathname.includes('json')}>
+                          {(handleClick, open) => (
+                            <React.Fragment>
+                              <NavLink
+                                to="data/media-portal"
+                                className={` group relative flex text-white items-center gap-2.5 rounded-sm px-4 py-2 font-medium duration-300 bg-graydark  ease-in-out hover:bg-meta-4 hover:text-black ${(pathname === '/data/media-portal' ||
+                          pathname.includes('JSONLs')) &&
+                        'bg-white text-blue-700 dark:bg-meta-4'
+                        }`}
+                                onClick={handleClick}
+                              >
+                   <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 -9.01 72.067 72.067"
+        className="w-6 h-6" 
+        fill="currentColor"   
+      >
+        <path
+            d="M346.165 315.85c-4.436 0-8.007 3.571-8.007 8.008v38.036c0 4.436 3.571 8.008 8.007 8.008h56.052c4.436 0 8.008-3.572 8.008-8.008v-38.036c0-4.437-3.572-8.008-8.008-8.008h-56.052zm0 4.004h56.052c2.218 0 4.004 1.786 4.004 4.004v38.036c0 2.218-1.786 4.004-4.004 4.004h-56.052c-2.218 0-4.004-1.786-4.004-4.004v-38.036c0-2.218 1.786-4.004 4.004-4.004zm0 4.004v38.036h12.011v-38.036h-12.011zm16.015 0v10.01h40.037v-10.01h-40.037zm5.005 2.002c1.658 0 3.003 1.344 3.003 3.003s-1.345 3.003-3.003 3.003-3.003-1.345-3.003-3.003 1.345-3.003 3.003-3.003zm10.072 0c1.658 0 3.003 1.344 3.003 3.003s-1.345 3.003-3.003 3.003-3.003-1.345-3.003-3.003 1.345-3.003 3.003-3.003zm10.009 0c1.658 0 3.003 1.344 3.003 3.003s-1.345 3.003-3.003 3.003-3.003-1.345-3.003-3.003 1.345-3.003 3.003-3.003zm10.009 0c1.658 0 3.003 1.344 3.003 3.003s-1.345 3.003-3.003 3.003-3.003-1.345-3.003-3.003 1.345-3.003 3.003-3.003zm-35.095 12.011v24.022h4.004v-14.013h2.002v14.013h4.004v-20.019h2.002v20.019h4.004v-6.006h2.002v6.006h4.004v-14.013h2.002v14.013h4.004v-12.011h2.002v12.011h4.004v-18.017h2.002v18.017h4.004v-24.022h-40.037z"
+            fill="#00bcf2"
+            transform="translate(-338.157 -315.85)"
+        />
+      </svg>
+                                <span>Media Portal</span>
+
                               </NavLink>
                             </React.Fragment>
                           )}
