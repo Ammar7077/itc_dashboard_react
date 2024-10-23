@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FOLDER, MAIN } from '../../types/folder';
+import { FOLDER, MAIN } from '../../core/types/folder';
 import { useDispatch, useSelector } from 'react-redux';
 import { getMainFolder, getSubFolder, getSubFolders, getSubSubfolders } from '../../redux/AI/aisSlice';
 import axios from 'axios';

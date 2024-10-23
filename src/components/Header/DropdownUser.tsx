@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import ClickOutside from '../ClickOutSide';
-import UserOne from '../../images/user/user.png';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import ClickOutside from "../ClickOutSide";
+import UserOne from "../../assets/images/user/user.png";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -23,7 +23,7 @@ const DropdownUser = () => {
           <img src={UserOne} alt="User" />
         </span>
 
-       {/*  <svg
+        {/*  <svg
           className="hidden fill-current sm:block"
           width="12"
           height="8"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FOLDER } from "../../../types/folder";
+import { FOLDER } from "../../../core/types/folder";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getFiles,

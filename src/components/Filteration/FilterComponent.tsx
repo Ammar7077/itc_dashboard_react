@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { SizeTypeEnum } from "../../enums/SizeType.enum";
+import { SizeTypeEnum } from "../../core/enums/SizeType.enum";
 
 interface FilterProps {
   onFilterChange: (filterBody: Record<string, any>) => void;
@@ -31,6 +31,19 @@ const FilterComponent: React.FC<FilterProps> = ({
     onFilterChange(updatedFilterBody);
   };
 
+  const clearFilter = () => {
+    setSelectedSizeTypeIndex(2);
+    const clearedFilterBody = {
+      name: undefined,
+      extension: undefined,
+      min_size: undefined,
+      max_size: undefined,
+      size_type: sizeTypeList[selectedSizeTypeIndex],
+    };
+    setFilterBody(clearedFilterBody);
+    onFilterChange(clearedFilterBody);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -53,6 +66,7 @@ const FilterComponent: React.FC<FilterProps> = ({
           File/Folder Name
         </label>
         <input
+          value={filterBody.name || ""}
           onChange={(e) => handleInputChange("name", e.target.value)}
           type="text"
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
@@ -64,6 +78,7 @@ const FilterComponent: React.FC<FilterProps> = ({
           File Type
         </label>
         <select
+          value={filterBody.extension || ""}
           onChange={(e) => handleInputChange("extension", e.target.value)}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
         >
@@ -82,7 +97,8 @@ const FilterComponent: React.FC<FilterProps> = ({
             Min Size ({sizeTypeList[selectedSizeTypeIndex]})
           </label>
           <input
-            onChange={(e) => handleInputChange("min_size", +e.target.value)}
+            value={filterBody.min_size || ""}
+            onChange={(e) => handleInputChange("min_size", e.target.value.length <= 0 ? undefined : +e.target.value)}
             type="number"
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
           />
@@ -92,7 +108,8 @@ const FilterComponent: React.FC<FilterProps> = ({
             Max Size ({sizeTypeList[selectedSizeTypeIndex]})
           </label>
           <input
-            onChange={(e) => handleInputChange("max_size", +e.target.value)}
+            value={filterBody.max_size || ""}
+            onChange={(e) => handleInputChange("max_size", e.target.value.length <= 0 ? undefined : +e.target.value)}
             type="number"
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
           />
@@ -122,6 +139,7 @@ const FilterComponent: React.FC<FilterProps> = ({
                   onClick={() => {
                     setSelectedSizeTypeIndex(index);
                     setIsDropDownSizeClicked(!isDropDownSizeClicked);
+                    handleInputChange("size_type", sizeType);
                   }}
                   className={`w-full block px-4 py-2 text-sm bg-${
                     selectedSizeTypeIndex === index ? "gray" : ""
@@ -137,12 +155,19 @@ const FilterComponent: React.FC<FilterProps> = ({
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="grid sm:grid-cols-2 gap-5 w-65">
         <button
           onClick={onApplyFilter}
-          className="w-50 px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700"
+          className="w-30 px-4 py-2 bg-indigo-500 text-white rounded-md shadow-sm hover:bg-indigo-700"
         >
           Apply Filter
+        </button>
+
+        <button
+          onClick={clearFilter}
+          className="w-30 px-4 py-2 bg-red-300 text-white rounded-md shadow-sm hover:bg-red-500"
+        >
+          Clear Filter
         </button>
       </div>
     </div>

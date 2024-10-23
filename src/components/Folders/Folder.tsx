@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FOLDER } from '../../types/folder';
+import { FOLDER } from '../../core/types/folder';
 import { useDispatch } from 'react-redux';
 import { getMainFolder } from '../../redux/JSONLs/JSONLsSlice';
 import { StaticFolderSvg } from '../Static/folder.svg';

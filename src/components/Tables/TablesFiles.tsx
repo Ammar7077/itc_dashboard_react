@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { FOLDER } from "../../types/folder";
+import { FOLDER } from "../../core/types/folder";
 
 interface FolderProps {
   ais: {

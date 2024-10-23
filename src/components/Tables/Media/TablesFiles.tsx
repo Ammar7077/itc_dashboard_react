@@ -1,25 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { FOLDER, MAIN } from "../../../types/folder";
+import { MAIN } from "../../../core/types/folder";
 import axios from "axios";
-import { clearFiles, getFileInfo, getFiles } from "../../../redux/Media/MediaSlice";
-import { FILE } from "../../../types/file";
+import {
+  clearFiles,
+  getFileInfo,
+  getFiles,
+} from "../../../redux/Media/MediaSlice";
+import { FILE } from "../../../core/types/file";
+import { useLocation } from "react-router-dom";
 
 // File icons
-import pdfIcon from "../../../images/FilesIcon/pdf.png";
-import docIcon from "../../../images/FilesIcon/doc.png";
-import excelIcon from "../../../images/FilesIcon/excel.png";
-import jpgIcon from "../../../images/FilesIcon/jpg.png";
-import pngIcon from "../../../images/FilesIcon/png.png";
-import jsonlIcon from "../../../images/FilesIcon/json.png";
-import txtIcon from "../../../images/FilesIcon/txt.png";
-import xlsxIcon from "../../../images/FilesIcon/xlsx.png";
-import docxIcon from "../../../images/FilesIcon/docx.png";
-import view from "../../../images/FilesIcon/research.png";
-import download from "../../../images/FilesIcon/download.png";
-import nextPage from "../../../images/pageIcon/next-page.png";
-import prePage from "../../../images/pageIcon/left-arrow.png";
-import { useLocation } from "react-router-dom";
+import pdfIcon from "../../../assets/images/FilesIcon/pdf.png";
+import docIcon from "../../../assets/images/FilesIcon/doc.png";
+import excelIcon from "../../../assets/images/FilesIcon/excel.png";
+import jpgIcon from "../../../assets/images/FilesIcon/jpg.png";
+import pngIcon from "../../../assets/images/FilesIcon/png.png";
+import jsonlIcon from "../../../assets/images/FilesIcon/json.png";
+import txtIcon from "../../../assets/images/FilesIcon/txt.png";
+import xlsxIcon from "../../../assets/images/FilesIcon/xlsx.png";
+import docxIcon from "../../../assets/images/FilesIcon/docx.png";
+import view from "../../../assets/images/FilesIcon/research.png";
+import download from "../../../assets/images/FilesIcon/download.png";
+import nextPage from "../../../assets/images/pageIcon/next-page.png";
+import prePage from "../../../assets/images/pageIcon/left-arrow.png";
+import { formatSize } from "../../../core/utils/FormatSize.util";
+import { downloadFile } from "../../../core/utils/DownloadFile.util";
 
 interface FolderProps {
   Media: {
@@ -32,7 +38,7 @@ interface FolderProps {
 const TableOne: React.FC<FolderProps> = () => {
   const { subFolder, files = [] } = useSelector((state: FolderProps) => ({
     subFolder: state.Media.subFolder,
-    files: state.Media.files || [], 
+    files: state.Media.files || [],
   }));
 
   const subFolderId = subFolder?.id;
@@ -49,7 +55,7 @@ const TableOne: React.FC<FolderProps> = () => {
   const fetchFiles = async (page: number) => {
     setLoading(true);
     setError(null);
-  
+
     try {
       const result = await axios.post<{
         length: number;
@@ -59,7 +65,7 @@ const TableOne: React.FC<FolderProps> = () => {
         limit: filesPerPage,
         page: page,
       });
-  
+
       if (result.data && result.data.length > 0) {
         dispatch(getFiles(result.data)); // Update Redux state with the new files
         setHasNextPage(result.data.length === filesPerPage); // True if the returned data fills the page
@@ -73,15 +79,13 @@ const TableOne: React.FC<FolderProps> = () => {
       setLoading(false);
     }
   };
-  
-  const location = useLocation(); 
 
-    // Clear files when the URL changes or component is unmounted
+  const location = useLocation();
+
+  // Clear files when the URL changes or component is unmounted
   useEffect(() => {
-      dispatch(clearFiles()); 
-    }, [location, dispatch]);  
-
-
+    dispatch(clearFiles());
+  }, [location, dispatch]);
 
   // Trigger file fetching when subFolder changes or currentPage changes
   useEffect(() => {
@@ -97,8 +101,6 @@ const TableOne: React.FC<FolderProps> = () => {
       setCurrentPage(newPage);
     }
   };
-  
-  
 
   // Handle file view and download
   const handleViewFile = (file: FILE) => {
@@ -107,26 +109,7 @@ const TableOne: React.FC<FolderProps> = () => {
 
   const handleDownloadFile = async (file: FILE) => {
     dispatch(getFileInfo(file));
-
-    try {
-      const result = await axios.get(
-        `http://79.134.138.252:7111/ftp/download?filePath=${file.path?.pathString}`,
-        {
-          responseType: "blob",
-        }
-      );
-
-      const blob = new Blob([result.data], { type: result.data.type });
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = file.name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error downloading file:", error);
-    }
+    await downloadFile(file.path?.pathString, file.name);
   };
 
   // Get file icon based on extension
@@ -156,21 +139,11 @@ const TableOne: React.FC<FolderProps> = () => {
     }
   };
 
-  // Function to convert bytes to a human-readable format
-  const formatSize = (bytes: number) => {
-    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-    if (bytes === 0) return '0 B';
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${(bytes / (1024 ** i)).toFixed(2)} ${sizes[i]}`;
-  };
-
   // Filter out folders from files
   const filteredFiles = files.filter((file) => file.document_type !== "folder");
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 bg-slate-50">
-      
-
       {loading && <p>Loading files...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
@@ -222,7 +195,9 @@ const TableOne: React.FC<FolderProps> = () => {
               </div>
 
               <div className="hidden xl:flex sm:hidden flex items-center justify-center p-2.5 sm:flex xl:p-5">
-                <p className="text-meta-3 ">{file.extension?.replace('.', '').toUpperCase()}</p>
+                <p className="text-meta-3 ">
+                  {file.extension?.replace(".", "").toUpperCase()}
+                </p>
               </div>
 
               <div className="flex items-center justify-center gap-2 p-2.5 xl:p-5">
@@ -241,27 +216,28 @@ const TableOne: React.FC<FolderProps> = () => {
               </div>
             </div>
           );
-        })
-        
-        }
+        })}
 
         {/* Pagination Controls */}
-      <div className="flex justify-center mt-4">
-        <img
-           src={prePage}
-           onClick={() => handlePageChange(currentPage - 1)}
-           className={`w-8 h-8 cursor-pointer ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
-           alt="Previous Page"
-         />
-       <p className="mx-2 text-lg">Page {currentPage}</p>
-       <img
-           src={nextPage}
-           onClick={() => hasNextPage && handlePageChange(currentPage + 1)}  // Only call handlePageChange if there is a next page
-           className={`w-8 h-8 cursor-pointer ${!hasNextPage ? "opacity-50 cursor-not-allowed" : ""}`}
-           alt="Next Page"
-        />
-      </div>
-
+        <div className="flex justify-center mt-4">
+          <img
+            src={prePage}
+            onClick={() => handlePageChange(currentPage - 1)}
+            className={`w-8 h-8 cursor-pointer ${
+              currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            alt="Previous Page"
+          />
+          <p className="mx-2 text-lg">Page {currentPage}</p>
+          <img
+            src={nextPage}
+            onClick={() => hasNextPage && handlePageChange(currentPage + 1)} // Only call handlePageChange if there is a next page
+            className={`w-8 h-8 cursor-pointer ${
+              !hasNextPage ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            alt="Next Page"
+          />
+        </div>
       </div>
     </div>
   );

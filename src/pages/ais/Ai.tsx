@@ -4,9 +4,9 @@ import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { clearFiles, getFiles, getFolders } from "../../redux/AI/aisSlice";
-import { FOLDER, MAIN } from "../../types/folder";
+import { FOLDER, MAIN } from "../../core/types/folder";
 import SubFolder from "../../components/Folders/AI/SubFolder";
-import { FILE } from "../../types/file";
+import { FILE } from "../../core/types/file";
 import { useLocation } from "react-router-dom";
 
 interface RootState {

@@ -5,9 +5,9 @@ import Folder from "../../components/Folders/JSONLs/Folder";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getFolders } from "../../redux/JSONLs/JSONLsSlice";
-import { FOLDER, MAIN } from "../../types/folder";
+import { FOLDER, MAIN } from "../../core/types/folder";
 import SubFolder from "../../components/Folders/JSONLs/SubFolder";
-import { FILE } from "../../types/file";
+import { FILE } from "../../core/types/file";
 
 interface RootState {
   JSONLs: {

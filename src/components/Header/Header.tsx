@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
-import DropdownNotification from './DropdownNotification';
 import DropdownUser from './DropdownUser';
-import LogoIcon from '../../images/logo/itc_logo.png';
+import LogoIcon from '../../assets/images/logo/itc_logo.png';
 import DarkModeSwitcher from './DropModeSwitcher';
 
 const Header = (props: {

@@ -5,9 +5,9 @@ import Folder from "../../components/Folders/Consultings/Folder";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getFolders } from "../../redux/Consultings/ConsultingsSlice";
-import { FOLDER, MAIN } from "../../types/folder";
+import { FOLDER, MAIN } from "../../core/types/folder";
 import SubFolder from "../../components/Folders/Consultings/SubFolder";
-import { FILE } from "../../types/file";
+import { FILE } from "../../core/types/file";
 
 interface RootState {
   Consultings: {
