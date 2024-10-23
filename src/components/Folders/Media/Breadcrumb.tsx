@@ -11,7 +11,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ path, onBreadcrumbClick, onBack
         <nav className="mb-4 mt-10 flex items-center justify-between pr-10 pl-5">
             <div className="flex items-center">
                 {path.map((folder, index) => (
-                    <span key={folder.id} className="flex items-center">
+                    <span key={folder.id} className="flex text-lg items-center">
                         <button
                             onClick={() => onBreadcrumbClick(folder)}
                             className="text-blue-500 hover:underline"
@@ -25,7 +25,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ path, onBreadcrumbClick, onBack
             { path.length > 1 &&
                 <button 
                 onClick={onBackClick} 
-                className="flex gap-2 items-center space-x-2 text-blue-500 hover:bg-slate-300 hover:border-white hover:text-white cursor-pointer border-solid border-2 border-indigo-700 rounded-lg pr-5 pl-5"
+                className="flex gap-2 hover:shadow-lg hover:shadow-cyan-400/80 items-center shadow-cyan-500 space-x-2 text-blue-500 hover:bg-slate-300 hover:border-white hover:text-white cursor-pointer border-solid border-2 border-indigo-700 rounded-lg pr-5 pl-5 "
                 disabled={path.length <= 1} // Disable button if there's no previous folder
             >
                 <svg 
