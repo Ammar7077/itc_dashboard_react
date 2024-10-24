@@ -1,5 +1,4 @@
-export type FILE = {
-  _id: string;
+export type TFile = {
   parent_id: string;
   name: string;
   size: number;

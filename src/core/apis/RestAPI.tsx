@@ -34,6 +34,7 @@ export class RestAPI {
     const url = `${baseUrl}${pathUrl}`;
     try {
       const response: AxiosResponse<any> = await axios.post(url, body);
+      console.log(response.data);
       return response;
     } catch (error) {
       this.handleError(error as AxiosError);

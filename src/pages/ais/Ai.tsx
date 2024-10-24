@@ -1,153 +1,142 @@
 import React, { useEffect, useState } from "react";
-import TableOne from "../../components/Tables/AI/TableFiles";
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { clearFiles, getFiles, getFolders } from "../../redux/AI/aisSlice";
-import { FOLDER, MAIN } from "../../core/types/folder";
-import SubFolder from "../../components/Folders/AI/SubFolder";
-import { FILE } from "../../core/types/file";
-import { useLocation } from "react-router-dom";
+import { setFiles, setFolders } from "../../redux/FilesFoldersListsSlice.redux";
+import { RestAPI } from "../../core/apis/RestAPI";
+import { TFolder } from "../../core/types/folder";
+import { TFile } from "../../core/types/file";
+import { TableFiles } from "../../components/TableFiles.component";
+import { FolderComponent } from "../../components/Folder.component";
+import { PathComponent } from "../../components/Path.component";
+import FilterComponent from "../../components/Filteration/FilterComponent";
 
-interface RootState {
-  AI: {
-    folders: FOLDER[];
-    mainFolder: MAIN;
-    fileInfo: FILE;
-    files: FILE[];
-  };
+interface IFilesFolders {
+  FilesFolders: { folders: []; files: [] };
 }
 
 const Ai: React.FC = () => {
-  const [parentId, setParentId] = useState<string>("null");
+  const [selectedFolderId, setSelectedFolderId] = useState("null");
+  const [selectedFolderList, setSelectedFolderList] = useState<TFolder[]>([]);
+  // --------------------------------------- //
   const dispatch = useDispatch();
-
-  const { folders, mainFolder, fileInfo, files } = useSelector(
-    (state: RootState) => ({
-      folders: state.AI.folders,
-      mainFolder: state.AI.mainFolder,
-      fileInfo: state.AI.fileInfo,
-      files: state.AI.files,
-    })
-  );
-
-  const location = useLocation()
-
-  // Clear files when the URL changes or component is unmounted
-  useEffect(() => {
-    dispatch(clearFiles()); 
-  }, [location]);  
-
-
-  const mainFolderName = mainFolder ? mainFolder.name : "loading...";
-  const mainFolderId = mainFolder ? mainFolder.id : "loading ...";
-
-  console.log(mainFolder?.name);
-  console.log(localStorage.getItem("selectedAIFolder"));
-  console.log(mainFolderName);
-  console.log(parentId);
-
- /*  // Fetch Folders
+  const { folders, files } = useSelector((state: IFilesFolders) => ({
+    folders: state.FilesFolders.folders,
+    files: state.FilesFolders.files,
+  }));
+  // --------------------------------------- //
   const fetchFolders = async () => {
     try {
-      const result = await axios.post<{ data: FOLDER[] }>(
-        `http://79.134.138.252:7111/ais/filter`,
-        {
-          parent_id: parentId,
-          limit: 100
-        }
-      );
-
-      console.log("API Response:", result.data); // Log the entire response
-      if (result.data) {
-        dispatch(getFolders(result.data));
-      } else {
-        console.warn("No data found in API response");
-      }
-    } catch (error) {
-      console.error("Error fetching folders:", error);
+      const res = await RestAPI.postRequest("ais/filter", {
+        parent_id: selectedFolderId,
+        document_type: "folder",
+        limit: 1000,
+      });
+      dispatch(setFolders([]));
+      dispatch(setFolders(res.data as TFolder[]));
+    } catch (err) {
+      console.error("Error fetching folders", err);
     }
   };
 
+  const fetchFilesByFolderId = async () => {
+    try {
+      const res = await RestAPI.postRequest("ais/filter", {
+        parent_id: selectedFolderId,
+        document_type: "file",
+        limit: 10,
+      });
+      dispatch(setFiles([]));
+      dispatch(setFiles(res.data as TFile[]));
+    } catch (err) {
+      console.error("Error fetching files", err);
+    }
+  };
+  // --------------------------------------- //
+  const handleFolderClick = (index: number) => {
+    setSelectedFolderList(selectedFolderList.slice(0, index + 1));
+  };
+
   useEffect(() => {
-    fetchFolders();
-  }, [parentId]); */
-      
+    const fetchData = async () => {
+      await Promise.all([fetchFolders(), fetchFilesByFolderId()]);
+    };
+    fetchData();
+  }, [selectedFolderId]);
 
   return (
     <>
-      <Breadcrumb pageName="AI" />
-      {/* Removed Folder Component */}
+      <h2 className="mb-6 text-title-md2 font-semibold text-black dark:text-white">
+        {"AI"}
+      </h2>
       <div className="grid gap-9 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 mb-10">
-        <div className="col-span-4 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ">
+        <div className="col-span-4 rounded-lg border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark p-5">
           <div className="flex flex-col gap-5.5 p-2">
-            <SubFolder mainFolderId={mainFolderId} />
+            {/* <FilterComponent onFilterChange={{}} onApplyFilter={{}} /> */}
+
+            {/* ----------------------- */}
+            <div className="inline-flex gap-1">
+              {selectedFolderList.map((item: TFolder, index) => (
+                <>
+                  <PathComponent
+                    key={`${index}-${item.name}`}
+                    folderName={item.name}
+                    onClick={() => {
+                      handleFolderClick(index);
+                      setSelectedFolderId(item._id);
+                    }}
+                  />
+                  {"/"}
+                </>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 animate-fadeIn">
+              {folders &&
+                folders.map((item: TFolder, index) => (
+                  <FolderComponent
+                    key={`${index}-${item}`}
+                    folder={item}
+                    onClick={() => {
+                      setSelectedFolderId(item._id);
+                      setSelectedFolderList((prev) => [...prev, item]);
+                    }}
+                  />
+                ))}
+            </div>
           </div>
         </div>
       </div>
-
-      {files && (
-        <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-4 gap-5">
-          <div className="col-span-3">
-            <TableOne
-              AI={{
-                fileInfo,
-                subFolder: {
-                  id: "",
-                  name: "",
-                },
-                files: [],
+      {/* -------- Files Table --------- */}
+      <TableFiles filesList={files ?? []} />
+      {/* --------- Next Page ---------- */}
+      <div className="flex justify-end p-2">
+        <ul className="inline-flex text-sm h-8 ml-auto">
+          <li>
+            <button
+              onClick={() => {
+                // TODO:
               }}
-            />
-          </div>
-
-          {fileInfo && (
-            <div className="flex justify-center items-center min-h-screen">
-              <div className="rounded-xl bg-slate-200 p-6 text-center shadow-xl max-w-lg dark:bg-boxdark">
-                <div className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-teal-400 shadow-lg shadow-teal-500/40">
-                  {/* SVG icon omitted for brevity */}
-                </div>
-                <h1 className="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600 inline-block">
-                  {fileInfo.name}
-                </h1>
-                <div className="text-lg mt-5 flex gap-8">
-                  <h3 className="text-gray-900 font-semibold leading-none hover:text-indigo-600 mt-1">
-                    Extension of file
-                  </h3>
-                  <p className="text-gray-900 font-bold text-lg hover:text-indigo-600 inline-block">
-                    {fileInfo.extension}
-                  </p>
-                </div>
-                <div className="text-lg mt-5 flex gap-8">
-                  <h3 className="text-gray-900 font-semibold leading-none hover:text-indigo-600 mt-1">
-                    Size of file
-                  </h3>
-                  <p className="text-gray-900 font-bold text-lg hover:text-indigo-600 inline-block">
-                    {fileInfo.size} KB
-                  </p>
-                </div>
-                <div className="text-lg mt-5 flex gap-8">
-                  <h3 className="text-gray-900 font-semibold leading-none hover:text-indigo-600 mt-1">
-                    Date of uploaded
-                  </h3>
-                  <p className="text-gray-900 font-bold text-lg hover:text-indigo-600 inline-block">
-                    {fileInfo.extension}
-                  </p>
-                </div>
-                <a
-                  href="#"
-                  className="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600 inline-block mt-8"
-                >
-                  Path of file in Server
-                </a>
-                <p className="text-gray-700 text-sm">
-                  {fileInfo.path.pathString}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+              className="flex items-center justify-center px-3 h-8 ms-0 text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            >
+              {"<"}
+            </button>
+          </li>
+          <li>
+            <p className="flex items-center justify-center px-3 h-8 text-gray-500 bg-gray dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+              {"1 Page Number"}
+            </p>
+          </li>
+          <li>
+            <button
+              onClick={() => {
+                // TODO:
+              }}
+              className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            >
+              {">"}
+            </button>
+          </li>
+        </ul>
+      </div>
     </>
   );
 };
